@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
 import Logo from '../ui/Logo';
 
@@ -14,8 +15,12 @@ export default function Navbar() {
 
         {/* Desktop nav actions */}
         <nav className="hidden md:flex items-center gap-3">
-          <Button variant="ghost">Login</Button>
-          <Button variant="primary">Get Started</Button>
+          <Link to="/login">
+            <Button variant="ghost">Login</Button>
+          </Link>
+          <Link to="/login?mode=signup">
+            <Button variant="primary">Get Started</Button>
+          </Link>
         </nav>
 
         {/* Mobile hamburger */}
