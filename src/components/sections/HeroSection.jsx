@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
 
 export default function HeroSection() {
@@ -27,7 +28,9 @@ export default function HeroSection() {
           <Button variant="primary">
             Get Started <ArrowRight size={15} />
           </Button>
-          <Button variant="outline">Login</Button>
+          <Link to="/login">
+            <Button variant="outline">Login</Button>
+          </Link>
         </div>
       </div>
 
