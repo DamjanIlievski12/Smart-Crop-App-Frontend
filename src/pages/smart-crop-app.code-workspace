@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../../Smart-Crop-Backend/Smart-Crop-App-Backend"
+		}
+	],
+	"settings": {}
+}
