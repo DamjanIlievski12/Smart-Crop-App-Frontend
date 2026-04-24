@@ -5,6 +5,7 @@ import FertilizerPage from './pages/FertilizerPage';
 import LoginPage from './pages/LoginPage';
 import FieldsPage from './pages/FieldsPage';
 import AddFieldPage from './pages/AddFieldPage';
+import CropAnalysisPage from './pages/CropAnalysisPage';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/crop-analysis" element={<CropAnalysisPage />} />
         <Route path="/disease-risk" element={<DiseaseRiskPage />} />
         <Route path="/fertilizer" element={<FertilizerPage />} />
         <Route path="/fields" element={<FieldsPage />} />
