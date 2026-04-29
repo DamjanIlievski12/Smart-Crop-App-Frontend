@@ -1,3 +1,4 @@
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -22,7 +23,7 @@ const NAV_ITEMS = [
   { label: 'Settings',      icon: Settings,         to: '/settings' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar(): React.ReactElement {
   return (
     <aside className="w-[230px] h-screen bg-[#2e5d40] flex flex-col flex-shrink-0 sticky top-0">
       {/* Brand */}

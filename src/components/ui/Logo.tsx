@@ -1,4 +1,6 @@
-export default function Logo() {
+import React from 'react';
+
+export default function Logo(): React.ReactElement {
   return (
     <a href="/" className="flex items-center gap-2.5 no-underline">
       {/* Leaf / crop icon */}

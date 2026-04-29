@@ -1,4 +1,14 @@
-export default function Button({ children, variant = 'primary', className = '', ...props }) {
+import type React from 'react';
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'ghost' | 'outline' | 'outline-white';
+}
+
+export default function Button({ 
+  children, 
+  variant = 'primary', 
+  className = '', 
+  ...props }: ButtonProps): React.ReactElement {
   const base =
     'inline-flex items-center gap-2 font-medium text-sm rounded-lg transition-all duration-200 cursor-pointer select-none';
 

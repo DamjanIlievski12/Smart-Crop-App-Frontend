@@ -3,8 +3,9 @@ import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
 import Logo from '../ui/Logo';
+import type React from 'react';
 
-export default function Navbar() {
+export default function Navbar(): React.ReactElement {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
