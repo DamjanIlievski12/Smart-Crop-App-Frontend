@@ -1,4 +1,13 @@
-export default function FeatureCard({ icon: Icon, title, description }) {
+import type { LucideIcon } from 'lucide-react';
+import type React from 'react';
+
+interface FeatureCardProps {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+export default function FeatureCard({ icon: Icon, title, description }: FeatureCardProps): React.ReactElement {
   return (
     <div className="bg-[#f3f4f2] rounded-2xl border border-gray-200/60 p-7 flex flex-col gap-5">
       {/* Icon */}

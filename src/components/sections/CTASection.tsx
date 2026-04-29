@@ -1,7 +1,8 @@
 import { ArrowRight } from 'lucide-react';
 import Button from '../ui/Button';
+import type React from 'react';
 
-export default function CTASection() {
+export default function CTASection(): React.ReactElement {
   return (
     <section className="py-16 px-6">
       <div className="max-w-2xl mx-auto bg-[#2e5d40] rounded-2xl px-8 py-12 text-center flex flex-col items-center gap-5">
