@@ -3,8 +3,9 @@ import Footer from '../components/layout/Footer';
 import HeroSection from '../components/sections/HeroSection';
 import FeaturesSection from '../components/sections/FeaturesSection';
 import CTASection from '../components/sections/CTASection';
+import React from 'react';
 
-export default function LandingPage() {
+export default function LandingPage(): React.ReactElement {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar + Hero – cream background */}
