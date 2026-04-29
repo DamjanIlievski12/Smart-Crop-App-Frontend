@@ -2,8 +2,11 @@ import AppLayout from '../components/layout/AppLayout';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, MapPin, TrendingUp } from 'lucide-react';
+import type { Field } from '../types/field';
+import type { StatCard } from '../types/ui';
+import type { ChangeEvent, MouseEvent } from 'react';
 
-const initialFields = [
+const initialFields: Field[] = [
   { id: 1, name: 'North Field',    crop: 'Wheat',   location: 'Northern Valley, CA', size: '15 acres', status: 'Healthy',    soilType: 'Loamy',      lastAnalysis: '2 days ago',  health: 94, risk: 'Low' },
   { id: 2, name: 'South Valley',   crop: 'Tomato',  location: 'South Ridge, CA',     size: '8 acres',  status: 'Good',       soilType: 'Clay',       lastAnalysis: '1 week ago',  health: 87, risk: 'Medium' },
   { id: 3, name: 'East Garden',    crop: 'Pepper',  location: 'East Hills, CA',      size: '5 acres',  status: 'Excellent',  soilType: 'Sandy Loam', lastAnalysis: '1 day ago',   health: 96, risk: 'Low' },
@@ -12,15 +15,21 @@ const initialFields = [
   { id: 6, name: 'Hilltop Field',  crop: 'Soybean', location: 'Highland Ridge, CA',  size: '10 acres', status: 'Healthy',    soilType: 'Sandy',      lastAnalysis: '2 days ago',  health: 91, risk: 'Low' },
 ];
 
-const allCrops = ['All Crops', 'Wheat', 'Tomato', 'Pepper', 'Corn', 'Rice', 'Soybean'];
-const allStatuses = ['All Status', 'Healthy', 'Good', 'Excellent', 'Monitoring'];
+const allCrops: string[] = ['All Crops', 'Wheat', 'Tomato', 'Pepper', 'Corn', 'Rice', 'Soybean'];
+const allStatuses: string[] = ['All Status', 'Healthy', 'Good', 'Excellent', 'Monitoring'];
 
-export default function FieldsPage() {
-  const [search, setSearch] = useState('');
-  const [cropFilter, setCropFilter] = useState('All Crops');
+const inputStyle: React.CSSProperties = {
+  background: 'white',
+  borderColor: 'var(--color-border)',
+  color: 'var(--color-text-primary)',
+};
+
+export default function FieldsPage(): React.ReactElement {
+  const [search, setSearch] = useState<string>('');
+  const [cropFilter, setCropFilter] = useState<string>('All Crops');
   const [statusFilter, setStatusFilter] = useState('All Status');
 
-  const filtered = initialFields.filter(f => {
+  const filtered: Field[] = initialFields.filter((f) => {
     const matchSearch = f.name.toLowerCase().includes(search.toLowerCase()) ||
                         f.location.toLowerCase().includes(search.toLowerCase());
     const matchCrop   = cropFilter === 'All Crops'   || f.crop === cropFilter;
@@ -28,14 +37,23 @@ export default function FieldsPage() {
     return matchSearch && matchCrop && matchStatus;
   });
 
-  const totalAcres = initialFields.reduce((sum, f) => sum + parseInt(f.size), 0);
-  const avgHealth  = Math.round(initialFields.reduce((sum, f) => sum + f.health, 0) / initialFields.length);
-  const alerts     = initialFields.filter(f => f.risk === 'Medium').length;
+  const totalAcres: number = initialFields.reduce((sum, f) => sum + parseInt(f.size), 10);
+  const avgHealth: number = Math.round(initialFields.reduce((sum, f) => sum + f.health, 0) / initialFields.length);
+  const alerts: number = initialFields.filter(f => f.risk === 'Medium').length;
 
-  const inputStyle = {
-    background: 'white',
-    borderColor: 'var(--color-border)',
-    color: 'var(--color-text-primary)',
+  const stats: StatCard[] = [
+    { label: 'Total Fields', value: initialFields.length, color: 'text-gray-900' },
+    { label: 'Total Area',   value: `${totalAcres} acres`, color: 'text-gray-900' },
+    { label: 'Avg Health',   value: `${avgHealth}%`,       color: 'text-green-600' },
+    { label: 'Active Alerts',value: alerts,                 color: 'text-orange-500' },
+  ];
+
+  const handleLinkMouseOver = (e: MouseEvent<HTMLElement>): void => {
+    e.currentTarget.style.background = 'var(--color-primary-hover)';
+  };
+
+  const handleLinkMouseOut = (e: MouseEvent<HTMLElement>): void => {
+    e.currentTarget.style.background = 'var(--color-primary)';
   };
 
   return (
@@ -50,8 +68,8 @@ export default function FieldsPage() {
           to="/fields/new"
           className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-colors"
           style={{ background: 'var(--color-primary)' }}
-          onMouseOver={e => (e.currentTarget.style.background = 'var(--color-primary-hover)')}
-          onMouseOut={e => (e.currentTarget.style.background = 'var(--color-primary)')}
+          onMouseOver={handleLinkMouseOver}
+          onMouseOut={handleLinkMouseOut}
         >
           <Plus className="w-4 h-4" />
           Add New Field
@@ -60,12 +78,7 @@ export default function FieldsPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Total Fields', value: initialFields.length, color: 'text-gray-900' },
-          { label: 'Total Area',   value: `${totalAcres} acres`, color: 'text-gray-900' },
-          { label: 'Avg Health',   value: `${avgHealth}%`,       color: 'text-green-600' },
-          { label: 'Active Alerts',value: alerts,                 color: 'text-orange-500' },
-        ].map(({ label, value, color }) => (
+        {stats.map(({ label, value, color }) => (
           <div key={label} className="bg-white border rounded-xl p-5" style={{ borderColor: 'var(--color-border)' }}>
             <p className="text-xs text-gray-500 mb-1">{label}</p>
             <p className={`text-3xl font-bold ${color}`}>{value}</p>
@@ -81,14 +94,14 @@ export default function FieldsPage() {
             type="text"
             placeholder="Search fields..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-3 text-sm rounded-lg border outline-none"
             style={inputStyle}
           />
         </div>
         <select
           value={cropFilter}
-          onChange={e => setCropFilter(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => setCropFilter(e.target.value)}
           className="px-4 py-3 text-sm rounded-lg border outline-none"
           style={inputStyle}
         >
@@ -96,7 +109,7 @@ export default function FieldsPage() {
         </select>
         <select
           value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value)}
           className="px-4 py-3 text-sm rounded-lg border outline-none"
           style={inputStyle}
         >
@@ -142,11 +155,13 @@ export default function FieldsPage() {
 
               {/* Details */}
               <div className="space-y-2 mb-4">
-                {[
-                  { label: 'Crop Type', value: field.crop },
-                  { label: 'Field Size', value: field.size },
-                  { label: 'Soil Type', value: field.soilType },
-                ].map(({ label, value }) => (
+                {(
+                  [
+                    { label: 'Crop Type', value: field.crop },
+                    { label: 'Field Size', value: field.size },
+                    { label: 'Soil Type', value: field.soilType },
+                  ] as { label: string; value: string }[]
+                ).map(({ label, value }) => (
                   <div key={label} className="flex justify-between text-sm">
                     <span className="text-gray-400">{label}</span>
                     <span className="font-medium text-gray-800">{value}</span>
@@ -183,8 +198,8 @@ export default function FieldsPage() {
                   to="/crop-analysis"
                   className="py-2 text-center text-sm font-medium rounded-lg text-white transition-colors"
                   style={{ background: 'var(--color-primary)' }}
-                  onMouseOver={e => (e.currentTarget.style.background = 'var(--color-primary-hover)')}
-                  onMouseOut={e => (e.currentTarget.style.background = 'var(--color-primary)')}
+                  onMouseOver={handleLinkMouseOver}
+                  onMouseOut={handleLinkMouseOut}
                 >
                   Analyze
                 </Link>
