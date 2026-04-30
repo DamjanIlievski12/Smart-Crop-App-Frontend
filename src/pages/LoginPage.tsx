@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Sprout, Eye, EyeOff } from 'lucide-react';
 import type { FocusEvent, MouseEvent } from 'react';
-import React from 'react';
+import type React from 'react';
 
 export default function LoginPage(): React.ReactElement {
   const [searchParams] = useSearchParams();

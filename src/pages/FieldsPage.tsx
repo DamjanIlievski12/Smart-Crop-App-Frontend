@@ -5,6 +5,7 @@ import { Plus, Search, MapPin, TrendingUp } from 'lucide-react';
 import type { Field } from '../types/field';
 import type { StatCard } from '../types/ui';
 import type { ChangeEvent, MouseEvent } from 'react';
+import type React from 'react';
 
 const initialFields: Field[] = [
   { id: 1, name: 'North Field',    crop: 'Wheat',   location: 'Northern Valley, CA', size: '15 acres', status: 'Healthy',    soilType: 'Loamy',      lastAnalysis: '2 days ago',  health: 94, risk: 'Low' },
@@ -37,7 +38,7 @@ export default function FieldsPage(): React.ReactElement {
     return matchSearch && matchCrop && matchStatus;
   });
 
-  const totalAcres: number = initialFields.reduce((sum, f) => sum + parseInt(f.size), 10);
+  const totalAcres: number = initialFields.reduce((sum, f) => sum + parseInt(f.size, 10), 0);
   const avgHealth: number = Math.round(initialFields.reduce((sum, f) => sum + f.health, 0) / initialFields.length);
   const alerts: number = initialFields.filter(f => f.risk === 'Medium').length;
 

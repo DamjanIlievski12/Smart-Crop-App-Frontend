@@ -3,7 +3,7 @@ import Footer from '../components/layout/Footer';
 import HeroSection from '../components/sections/HeroSection';
 import FeaturesSection from '../components/sections/FeaturesSection';
 import CTASection from '../components/sections/CTASection';
-import React from 'react';
+import type React from 'react';
 
 export default function LandingPage(): React.ReactElement {
   return (

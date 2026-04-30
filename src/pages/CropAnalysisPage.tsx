@@ -1,7 +1,6 @@
 import AppLayout from '../components/layout/AppLayout';
 import {
-  RadialBarChart, RadialBar, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, Tooltip,
+  RadialBarChart, RadialBar, ResponsiveContainer
 } from 'recharts';
 import {
   TrendingUp, Droplets, ThermometerSun, AlertTriangle,

@@ -7,7 +7,7 @@ import {
   Sprout, TrendingUp,
 } from 'lucide-react';
 import type { ApplicationGuideline, FertilizerScheduleItem, YieldDataPoint } from '../types/fertilizer';
-import React from 'react';
+import type React from 'react';
 
 const schedule: FertilizerScheduleItem[] = [
   { week: 'Week 1', dates: 'March 28 - April 3',  type: 'Urea (46-0-0)',     rate: '50 kg/acre', status: 'Pending',   statusColor: 'bg-orange-100 text-orange-600' },
@@ -28,12 +28,12 @@ const guidelines: ApplicationGuideline[] = [
   { title: 'Monitoring',          text: 'Check soil nutrient levels 2 weeks after each application' },
 ];
 
-interface AiMetrics {
+interface AiMetric {
   label: string;
   value: string;
 }
 
-const AiMetrics: AiMetrics[] = [
+const AiMetrics: AiMetric[] = [
   { label: 'Recommended Type', value: 'NPK 15-15-15' },
   { label: 'Application Rate',  value: '120 kg/acre' },
   { label: 'Expected Yield Increase', value: '+25-45%' },

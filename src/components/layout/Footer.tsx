@@ -1,6 +1,7 @@
 import Logo from '../ui/Logo';
+import type React from 'react';
 
-export default function Footer() {
+export default function Footer(): React.ReactElement {
   return (
     <footer className="border-t border-gray-200/60 bg-white">
       <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">

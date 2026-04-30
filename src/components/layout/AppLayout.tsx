@@ -1,5 +1,4 @@
-import { Bell, Search } from 'lucide-react';
-import { User } from 'lucide-react';
+import { Bell, Search, User } from 'lucide-react';
 import Sidebar from './Sidebar';
 import type React from 'react';
 

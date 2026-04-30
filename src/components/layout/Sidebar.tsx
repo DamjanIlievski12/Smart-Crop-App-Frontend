@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -11,8 +11,9 @@ import {
   Settings,
   User,
 } from 'lucide-react';
+import type { NavItem } from '../../types/ui';
 
-const NAV_ITEMS = [
+const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard',     icon: LayoutDashboard, to: '/dashboard' },
   { label: 'Fields',        icon: MapPin,           to: '/fields' },
   { label: 'Crop Analysis', icon: Activity,         to: '/crop-analysis' },
