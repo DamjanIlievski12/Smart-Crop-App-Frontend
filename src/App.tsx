@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import FieldsPage from './pages/FieldsPage';
 import AddFieldPage from './pages/AddFieldPage';
 import CropAnalysisPage from './pages/CropAnalysisPage';
+import ReportsPage from './pages/ReportsPage';
 import type React from 'react';
 
 export default function App(): React.ReactElement {
@@ -17,6 +18,7 @@ export default function App(): React.ReactElement {
         <Route path="/crop-analysis" element={<CropAnalysisPage />} />
         <Route path="/disease-risk" element={<DiseaseRiskPage />} />
         <Route path="/fertilizer" element={<FertilizerPage />} />
+        <Route path="/reports" element={<ReportsPage />} />
         <Route path="/fields" element={<FieldsPage />} />
         <Route path="/fields/new" element={<AddFieldPage />} />
       </Routes>
