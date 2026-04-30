@@ -7,6 +7,7 @@ import FieldsPage from './pages/FieldsPage';
 import AddFieldPage from './pages/AddFieldPage';
 import CropAnalysisPage from './pages/CropAnalysisPage';
 import ReportsPage from './pages/ReportsPage';
+import WeatherPage from './pages/WeatherPage';
 import type React from 'react';
 
 export default function App(): React.ReactElement {
@@ -19,6 +20,7 @@ export default function App(): React.ReactElement {
         <Route path="/disease-risk" element={<DiseaseRiskPage />} />
         <Route path="/fertilizer" element={<FertilizerPage />} />
         <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/weather" element={<WeatherPage />} />
         <Route path="/fields" element={<FieldsPage />} />
         <Route path="/fields/new" element={<AddFieldPage />} />
       </Routes>
