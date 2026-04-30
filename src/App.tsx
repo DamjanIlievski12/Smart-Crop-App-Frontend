@@ -6,8 +6,9 @@ import LoginPage from './pages/LoginPage';
 import FieldsPage from './pages/FieldsPage';
 import AddFieldPage from './pages/AddFieldPage';
 import CropAnalysisPage from './pages/CropAnalysisPage';
+import type React from 'react';
 
-export default function App() {
+export default function App(): React.ReactElement {
   return (
     <BrowserRouter>
       <Routes>

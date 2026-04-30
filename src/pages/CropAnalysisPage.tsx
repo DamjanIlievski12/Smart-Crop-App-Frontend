@@ -1,23 +1,25 @@
 import AppLayout from '../components/layout/AppLayout';
 import {
-  RadialBarChart, RadialBar, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, Tooltip,
+  RadialBarChart, RadialBar, ResponsiveContainer
 } from 'recharts';
 import {
   TrendingUp, Droplets, ThermometerSun, AlertTriangle,
   CheckCircle2, Sparkles, Calendar, MapPin, ChevronDown,
+  type LucideIcon,
 } from 'lucide-react';
+import type { Priority, Recommendation, RecommendationType } from '../types/analysis';
+import type React from 'react';
  
 /* ── Data ─────────────────────────────────────────────── */
-const healthData = [{ name: 'Health', value: 92, fill: '#2e5d40' }];
+interface RadialData {
+  name: string;
+  value: number;
+  fill: string;
+}
+
+const healthData: RadialData[] = [{ name: 'Health', value: 92, fill: '#2e5d40' }];
  
-const nutrientData = [
-  { name: 'Nitrogen',   value: 85, color: '#2e5d40', status: 'Optimal' },
-  { name: 'Phosphorus', value: 78, color: '#4a7c5e', status: 'Good'    },
-  { name: 'Potassium',  value: 90, color: '#f97316', status: 'Optimal' },
-];
- 
-const recommendations = [
+const recommendations: Recommendation[] = [
   {
     title: 'Optimal Irrigation Schedule',
     description: 'Increase watering by 15% during next 5 days due to rising temperatures.',
@@ -37,51 +39,49 @@ const recommendations = [
     type: 'disease',
   },
 ];
+
+interface Condition {
+  label: string;
+  value: number;
+  status: string;
+  statusColor: string;
+  bg: string;
+  iconBg: string;
+  Icon: LucideIcon;
+  iconColor: string;
+}
+
+const conditions: Condition[] = [
+  { label: 'Temperature', value: 26, status: 'Optimal', statusColor: 'text-green-600', bg: 'bg-blue-50', iconBg: 'bg-blue-500/10', Icon: ThermometerSun, iconColor: 'text-blue-500' },
+  { label: 'Humidity', value: 65, status: 'Good', statusColor: 'text-green-600', bg: 'bg-cyan-50', iconBg: 'bg-cyan-500/10', Icon: Droplets, iconColor: 'text-cyan-500' },
+  { label: 'Rainfall (7d)', value: 12, status: 'Low', statusColor: 'text-yellow-600', bg: 'bg-indigo-50', iconBg: 'bg-indigo-500/10', Icon: Droplets, iconColor: 'text-indigo-500' },
+];
+
+interface DiseaseRisk {
+  label: string;
+  level: string;
+  pct: number;
+  bar: string;
+}
+
+const diseaseRisks: DiseaseRisk[] = [
+  { label: 'Fungal Disease', level: 'Low', pct: 20, bar: 'bg-green-500' },
+  { label: 'Pest Infestation', level: 'Medium', pct: 50, bar: 'bg-yellow-500' },
+  { label: 'Bacterial', level: 'Low', pct: 18, bar: 'bg-green-500' },
+];
  
 /* ── Sub-components ───────────────────────────────────── */
-function NutrientCircle({ nutrient }) {
-  const circumference = 2 * Math.PI * 44;
-  const strokeDasharray = `${(nutrient.value / 100) * circumference} ${circumference}`;
  
-  return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="relative w-28 h-28">
-        <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-          <circle cx="50" cy="50" r="44" fill="none" stroke="#f3f4f6" strokeWidth="8" />
-          <circle
-            cx="50" cy="50" r="44"
-            fill="none"
-            stroke={nutrient.color}
-            strokeWidth="8"
-            strokeDasharray={strokeDasharray}
-            strokeLinecap="round"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xl font-bold text-gray-900">{nutrient.value}%</span>
-        </div>
-      </div>
-      <div className="text-center">
-        <p className="text-sm font-semibold text-gray-800">{nutrient.name}</p>
-        <span
-          className="text-xs font-medium px-2 py-0.5 rounded-full"
-          style={{
-            backgroundColor: nutrient.status === 'Optimal' ? '#dcfce7' : '#fef9c3',
-            color: nutrient.status === 'Optimal' ? '#166534' : '#854d0e',
-          }}
-        >
-          {nutrient.status}
-        </span>
-      </div>
-    </div>
-  );
+interface RecIconProps {
+  type: RecommendationType;
+  priority: Priority;
 }
- 
-function RecIcon({ type, priority }) {
+
+function RecIcon({ type, priority }: RecIconProps): React.ReactElement {
   const isHigh = priority === 'High';
   const bg = isHigh ? 'bg-orange-50' : 'bg-blue-50';
   const color = isHigh ? 'text-orange-500' : 'text-blue-500';
-  const Icon = type === 'irrigation' ? Droplets : type === 'fertilizer' ? TrendingUp : AlertTriangle;
+  const Icon: LucideIcon = type === 'irrigation' ? Droplets : type === 'fertilizer' ? TrendingUp : AlertTriangle;
   return (
     <div className={`w-9 h-9 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}>
       <Icon size={16} className={color} />
@@ -90,7 +90,7 @@ function RecIcon({ type, priority }) {
 }
  
 /* ── Page ──────────────────────────────────────────────── */
-export default function CropAnalysisPage() {
+export default function CropAnalysisPage(): React.ReactElement {
   return (
     <AppLayout>
       {/* Header */}
@@ -176,11 +176,7 @@ export default function CropAnalysisPage() {
         <div className="flex-1 bg-white rounded-2xl border border-gray-100 p-5">
           <h2 className="text-sm font-semibold text-gray-800 mb-4">Current Conditions</h2>
           <div className="flex flex-col gap-3">
-            {[
-              { label: 'Temperature', value: '26°C',  status: 'Optimal', statusColor: 'text-green-600', bg: 'bg-blue-50',   iconBg: 'bg-blue-500/10',   Icon: ThermometerSun, iconColor: 'text-blue-500' },
-              { label: 'Humidity',    value: '65%',   status: 'Good',    statusColor: 'text-green-600', bg: 'bg-cyan-50',   iconBg: 'bg-cyan-500/10',   Icon: Droplets,       iconColor: 'text-cyan-500' },
-              { label: 'Rainfall (7d)', value: '12mm', status: 'Low',   statusColor: 'text-yellow-600',bg: 'bg-indigo-50', iconBg: 'bg-indigo-500/10', Icon: Droplets,       iconColor: 'text-indigo-500' },
-            ].map(({ label, value, status, statusColor, bg, iconBg, Icon, iconColor }) => (
+            {conditions.map(({ label, value, status, statusColor, bg, iconBg, Icon, iconColor }) => (
               <div key={label} className={`flex items-center justify-between px-4 py-3 rounded-xl ${bg}`}>
                 <div className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center`}>
@@ -210,11 +206,7 @@ export default function CropAnalysisPage() {
           </div>
  
           <div className="flex flex-col gap-3">
-            {[
-              { label: 'Fungal Disease',   level: 'Low',    pct: 20, bar: 'bg-green-500'  },
-              { label: 'Pest Infestation', level: 'Medium', pct: 50, bar: 'bg-yellow-500' },
-              { label: 'Bacterial',        level: 'Low',    pct: 18, bar: 'bg-green-500'  },
-            ].map(({ label, level, pct, bar }) => (
+            {diseaseRisks.map(({ label, level, pct, bar }) => (
               <div key={label}>
                 <div className="flex justify-between text-xs mb-1">
                   <span className="text-gray-500">{label}</span>
@@ -229,18 +221,7 @@ export default function CropAnalysisPage() {
         </div>
       </div>
  
-      {/* ── Row 3: Nutrient Levels + Growth Trend ── */}
-      <div className="flex gap-4 mb-4">
-        {/* Soil Nutrient Levels */}
-        <div className="flex-1 bg-white rounded-2xl border border-gray-100 p-5">
-          <h2 className="text-sm font-semibold text-gray-800 mb-6">Soil Nutrient Levels</h2>
-          <div className="flex items-center justify-around">
-            {nutrientData.map((n) => <NutrientCircle key={n.name} nutrient={n} />)}
-          </div>
-        </div>
-      </div>
- 
-      {/* ── Row 4: AI Recommendations ── */}
+      {/* ── Row 3: AI Recommendations ── */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5">
         <div className="flex items-center justify-between mb-5">
           <h2 className="flex items-center gap-2 text-base font-semibold text-gray-900">

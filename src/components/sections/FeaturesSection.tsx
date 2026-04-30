@@ -1,7 +1,15 @@
 import { Brain, Cloud, TriangleAlert, Sprout, MapPin } from 'lucide-react';
 import FeatureCard from '../ui/FeatureCard';
+import type React from 'react';
+import type { LucideIcon } from 'lucide-react';
 
-const FEATURES = [
+interface Feature {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+const FEATURES: Feature[] = [
   {
     icon: Brain,
     title: 'AI Recommendations',
@@ -34,7 +42,7 @@ const FEATURES = [
   },
 ];
 
-export default function FeaturesSection() {
+export default function FeaturesSection(): React.ReactElement {
   return (
     <section className="py-16 px-6">
       {/* Section header */}

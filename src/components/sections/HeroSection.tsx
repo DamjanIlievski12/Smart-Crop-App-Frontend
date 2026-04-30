@@ -1,8 +1,9 @@
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Button from '../ui/Button';
+import type React from 'react';
 
-export default function HeroSection() {
+export default function HeroSection(): React.ReactElement {
   return (
     <section className="max-w-6xl mx-auto px-6 pt-14 pb-16 flex flex-col md:flex-row items-center gap-10 md:gap-14">
       {/* Left – text content */}

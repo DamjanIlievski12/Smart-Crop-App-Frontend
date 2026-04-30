@@ -1,3 +1,4 @@
+import type React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -10,8 +11,9 @@ import {
   Settings,
   User,
 } from 'lucide-react';
+import type { NavItem } from '../../types/ui';
 
-const NAV_ITEMS = [
+const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard',     icon: LayoutDashboard, to: '/dashboard' },
   { label: 'Fields',        icon: MapPin,           to: '/fields' },
   { label: 'Crop Analysis', icon: Activity,         to: '/crop-analysis' },
@@ -22,7 +24,7 @@ const NAV_ITEMS = [
   { label: 'Settings',      icon: Settings,         to: '/settings' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar(): React.ReactElement {
   return (
     <aside className="w-[230px] h-screen bg-[#2e5d40] flex flex-col flex-shrink-0 sticky top-0">
       {/* Brand */}

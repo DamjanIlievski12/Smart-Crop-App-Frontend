@@ -1,17 +1,43 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Sprout, Eye, EyeOff } from 'lucide-react';
+import type { FocusEvent, MouseEvent } from 'react';
+import type React from 'react';
 
-export default function LoginPage() {
+export default function LoginPage(): React.ReactElement {
   const [searchParams] = useSearchParams();
-  const [isRegister, setIsRegister] = useState(searchParams.get('mode') === 'signup');
-  const [showPassword, setShowPassword] = useState(false);
+  const [isRegister, setIsRegister] = useState<boolean>(searchParams.get('mode') === 'signup');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>): void => {
     e.preventDefault();
     // TODO: connect to your auth API
-    navigate('/');
+    void navigate('/');
+  };
+
+  const handleFocus = (e: FocusEvent<HTMLInputElement>): void => {
+    e.target.style.borderColor = 'var(--color-primary)';
+  };
+
+  const handleBlur = (e: FocusEvent<HTMLInputElement>): void => {
+    e.target.style.borderColor = 'var(--color-border)';
+  };
+
+  const handleMouseOver = (e: MouseEvent<HTMLElement>): void => {
+    (e.target as HTMLElement).style.color = 'var(--color-primary-hover)';
+  };
+
+  const handleMouseOut = (e: MouseEvent<HTMLElement>): void => {
+    (e.target as HTMLElement).style.color = 'var(--color-primary)';
+  };
+
+  const handleButtonMouseOver = (e: MouseEvent<HTMLButtonElement>): void => {
+    e.currentTarget.style.background = 'var(--color-primary-hover)';
+  };
+
+  const handleButtonMouseOut = (e: MouseEvent<HTMLButtonElement>): void => {
+    e.currentTarget.style.background = 'var(--color-primary)';
   };
 
   return (
@@ -62,8 +88,8 @@ export default function LoginPage() {
                     background: '#f9f9f7',
                     borderColor: 'var(--color-border)',
                   }}
-                  onFocus={e => (e.target.style.borderColor = 'var(--color-primary)')}
-                  onBlur={e => (e.target.style.borderColor = 'var(--color-border)')}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
                 />
               </div>
             )}
@@ -79,8 +105,8 @@ export default function LoginPage() {
                   background: '#f9f9f7',
                   borderColor: 'var(--color-border)',
                 }}
-                onFocus={e => (e.target.style.borderColor = 'var(--color-primary)')}
-                onBlur={e => (e.target.style.borderColor = 'var(--color-border)')}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
               />
             </div>
 
@@ -96,8 +122,8 @@ export default function LoginPage() {
                     background: '#f9f9f7',
                     borderColor: 'var(--color-border)',
                   }}
-                  onFocus={e => (e.target.style.borderColor = 'var(--color-primary)')}
-                  onBlur={e => (e.target.style.borderColor = 'var(--color-border)')}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
                 />
                 <button
                   type="button"
@@ -124,8 +150,8 @@ export default function LoginPage() {
                   href="#"
                   className="font-medium transition-colors"
                   style={{ color: 'var(--color-primary)' }}
-                  onMouseOver={e => (e.target.style.color = 'var(--color-primary-hover)')}
-                  onMouseOut={e => (e.target.style.color = 'var(--color-primary)')}
+                  onMouseOver={handleMouseOver}
+                  onMouseOut={handleMouseOut}
                 >
                   Forgot password?
                 </a>
@@ -137,8 +163,8 @@ export default function LoginPage() {
               type="submit"
               className="w-full py-3 rounded-lg text-sm font-semibold text-white transition-all duration-200 active:scale-[0.98]"
               style={{ background: 'var(--color-primary)' }}
-              onMouseOver={e => (e.target.style.background = 'var(--color-primary-hover)')}
-              onMouseOut={e => (e.target.style.background = 'var(--color-primary)')}
+              onMouseOver={handleButtonMouseOver}
+              onMouseOut={handleButtonMouseOut}
             >
               {isRegister ? 'Create Account' : 'Sign In'}
             </button>
@@ -148,11 +174,11 @@ export default function LoginPage() {
           <p className="text-center text-sm text-gray-500">
             {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
             <button
-              onClick={() => setIsRegister(r => !r)}
+              onClick={() => setIsRegister((r) => !r)}
               className="font-semibold transition-colors"
               style={{ color: 'var(--color-primary)' }}
-              onMouseOver={e => (e.target.style.color = 'var(--color-primary-hover)')}
-              onMouseOut={e => (e.target.style.color = 'var(--color-primary)')}
+              onMouseOver={handleButtonMouseOver}
+              onMouseOut={handleButtonMouseOut}
             >
               {isRegister ? 'Sign In' : 'Sign Up'}
             </button>

@@ -1,8 +1,12 @@
-import { Bell, Search } from 'lucide-react';
-import { User } from 'lucide-react';
+import { Bell, Search, User } from 'lucide-react';
 import Sidebar from './Sidebar';
+import type React from 'react';
 
-export default function AppLayout({ children }) {
+interface AppLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function AppLayout({ children }: AppLayoutProps): React.ReactElement {
   return (
     <div className="flex min-h-screen bg-[#f5f6f4]">
       <Sidebar />
