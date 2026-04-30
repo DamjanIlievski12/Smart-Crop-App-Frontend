@@ -4,16 +4,18 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts';
 import { TrendingDown, TriangleAlert, CheckCircle2 } from 'lucide-react';
+import type { BadgeType, DiseaseAlert, PreventionRecommendation, RiskMetric, SeverityLevel, TrendDataPoint, VulnerabilityFactor } from '../types/disease';
+import type React from 'react';
 
 /* ── Data ─────────────────────────────────────────────── */
-const riskMetrics = [
+const riskMetrics: RiskMetric[] = [
   { label: 'Fungal Risk',   value: 15 },
   { label: 'Viral Risk',    value: 22 },
   { label: 'Bacterial Risk',value: 12 },
   { label: 'Soil Risk',     value: 8  },
 ];
 
-const trendData = [
+const trendData: TrendDataPoint[] = [
   { month: 'Jan', risk: 28 },
   { month: 'Feb', risk: 22 },
   { month: 'Mar', risk: 30 },
@@ -22,7 +24,7 @@ const trendData = [
   { month: 'Jun', risk: 18 },
 ];
 
-const vulnerabilityData = [
+const vulnerabilityData: VulnerabilityFactor[] = [
   { factor: 'Temperature',   value: 65 },
   { factor: 'Humidity',      value: 72 },
   { factor: 'Rainfall',      value: 48 },
@@ -30,7 +32,7 @@ const vulnerabilityData = [
   { factor: 'Wind',          value: 30 },
 ];
 
-const diseaseAlerts = [
+const diseaseAlerts: DiseaseAlert[] = [
   {
     name: 'Early Blight',
     probability: 35,
@@ -57,7 +59,7 @@ const diseaseAlerts = [
   },
 ];
 
-const recommendations = [
+const recommendations: PreventionRecommendation[] = [
   { title: 'Crop Rotation',   description: 'Rotate with non-solanaceous crops to break disease cycles',   badge: 'Recommended' },
   { title: 'Proper Spacing',  description: 'Maintain 18-24 inch spacing for better air circulation',       badge: 'Active' },
   { title: 'Mulching',        description: 'Apply organic mulch to prevent soil splash',                   badge: 'Recommended' },
@@ -65,27 +67,28 @@ const recommendations = [
 ];
 
 /* ── Helpers ───────────────────────────────────────────── */
-function SeverityBadge({ level }) {
-  const styles = {
-    Medium: 'bg-orange-100 text-orange-600',
-    Low:    'bg-yellow-100 text-yellow-600',
-    High:   'bg-red-100 text-red-600',
-  };
+const severityStyles: Record<SeverityLevel, string> = {
+  Medium: 'bg-orange-100 text-orange-600',
+  Low:    'bg-yellow-100 text-yellow-600',
+  High:   'bg-red-100 text-red-600',
+};
+
+function SeverityBadge({ level }: { level: SeverityLevel }): React.ReactElement {
   return (
-    <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${styles[level] ?? styles.Low}`}>
+    <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${severityStyles[level]}`}>
       {level}
     </span>
   );
 }
 
-function RecommendationBadge({ type }) {
+function RecommendationBadge({ type }: { type: BadgeType }): React.ReactElement {
   return type === 'Active'
     ? <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-green-100 text-green-700">Active</span>
     : <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-600">Recommended</span>;
 }
 
 /* ── Page ──────────────────────────────────────────────── */
-export default function DiseaseRiskPage() {
+export default function DiseaseRiskPage(): React.ReactElement {
   return (
     <AppLayout>
       {/* Header */}
