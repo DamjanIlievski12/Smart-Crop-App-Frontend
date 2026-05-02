@@ -6,7 +6,7 @@ import {
   Download, Sparkles, ChevronDown, CalendarDays, Info,
   Sprout, TrendingUp,
 } from 'lucide-react';
-import type { ApplicationGuideline, FertilizerScheduleItem, YieldDataPoint } from '../types/fertilizer';
+import type { ApplicationGuideline, FertilizerScheduleItem, YieldDataPoint } from '../api/types/fertilizer';
 import type React from 'react';
 
 const schedule: FertilizerScheduleItem[] = [

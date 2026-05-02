@@ -2,7 +2,7 @@ import AppLayout from '../components/layout/AppLayout';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save } from 'lucide-react';
-import type { AddFieldForm } from '../types/field';
+import type { AddFieldForm } from '../api/types/field';
 import type React from 'react';
 
 const inputClass = 'w-full px-4 py-3 text-sm rounded-lg border outline-none transition-all';

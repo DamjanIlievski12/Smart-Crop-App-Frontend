@@ -10,7 +10,7 @@ import {
 import type {
   CurrentWeatherMetric, ForecastDay, TemperaturePoint,
   HumidityPoint, RainfallPoint, WeatherImpact,
-} from '../types/weather';
+} from '../api/types/weather';
 import type React from 'react';
 
 /* ── Data ─────────────────────────────────────────────── */

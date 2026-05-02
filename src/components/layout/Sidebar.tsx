@@ -11,7 +11,8 @@ import {
   Settings,
   User,
 } from 'lucide-react';
-import type { NavItem } from '../../types/ui';
+import type { NavItem } from '../../api/types/ui';
+import { useAuth } from '../../context/auth/authContext';
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard',     icon: LayoutDashboard, to: '/dashboard' },
@@ -25,6 +26,12 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export default function Sidebar(): React.ReactElement {
+  const { user } = useAuth();
+
+  const initials = user?.fullName
+    ? user.fullName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
+    : '?';
+
   return (
     <aside className="w-[230px] h-screen bg-[#2e5d40] flex flex-col flex-shrink-0 sticky top-0">
       {/* Brand */}
@@ -73,11 +80,15 @@ export default function Sidebar(): React.ReactElement {
       {/* User profile */}
       <div className="px-4 py-4 border-t border-white/10 flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
-          <User size={15} className="text-white/80" />
+          <span className="text-white text-xs font-semibold">{initials}</span>
         </div>
-        <div className="flex flex-col leading-tight">
-          <span className="text-white text-xs font-medium">John Farmer</span>
-          <span className="text-white/50 text-xs">Premium Plan</span>
+        <div className="flex flex-col leading-tight min-w-0">
+          <span className="text-white text-xs font-medium truncate">
+            {user?.fullName ?? '-'}
+          </span>
+          <span className="text-white/50 text-xs truncate">
+            {user?.email ?? ''}
+          </span>
         </div>
       </div>
     </aside>

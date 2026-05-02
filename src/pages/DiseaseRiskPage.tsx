@@ -4,7 +4,7 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts';
 import { TrendingDown, TriangleAlert, CheckCircle2 } from 'lucide-react';
-import type { BadgeType, DiseaseAlert, PreventionRecommendation, RiskMetric, SeverityLevel, TrendDataPoint, VulnerabilityFactor } from '../types/disease';
+import type { BadgeType, DiseaseAlert, PreventionRecommendation, RiskMetric, SeverityLevel, TrendDataPoint, VulnerabilityFactor } from '../api/types/disease';
 import type React from 'react';
 
 /* ── Data ─────────────────────────────────────────────── */

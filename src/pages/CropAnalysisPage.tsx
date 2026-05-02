@@ -7,7 +7,7 @@ import {
   CheckCircle2, Sparkles, Calendar, MapPin, ChevronDown,
   type LucideIcon,
 } from 'lucide-react';
-import type { Priority, Recommendation, RecommendationType } from '../types/analysis';
+import type { Priority, Recommendation, RecommendationType } from '../api/types/analysis';
 import type React from 'react';
  
 /* ── Data ─────────────────────────────────────────────── */
