@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import type {
   ReportStat, ReportRow, ReportType, ExportOption,
-} from '../types/report';
+} from '../api/types/report';
 import type React from 'react';
 
 /* ── Data ─────────────────────────────────────────────── */

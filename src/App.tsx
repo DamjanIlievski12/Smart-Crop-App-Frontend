@@ -9,21 +9,48 @@ import CropAnalysisPage from './pages/CropAnalysisPage';
 import ReportsPage from './pages/ReportsPage';
 import WeatherPage from './pages/WeatherPage';
 import type React from 'react';
+import { AuthProvider } from './providers/AuthProvider';
+import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App(): React.ReactElement {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/crop-analysis" element={<CropAnalysisPage />} />
-        <Route path="/disease-risk" element={<DiseaseRiskPage />} />
-        <Route path="/fertilizer" element={<FertilizerPage />} />
-        <Route path="/reports" element={<ReportsPage />} />
-        <Route path="/weather" element={<WeatherPage />} />
-        <Route path="/fields" element={<FieldsPage />} />
-        <Route path="/fields/new" element={<AddFieldPage />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          // Public routes
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          // Protected routes
+          <Route 
+            path="/crop-analysis"
+            element={<ProtectedRoute><CropAnalysisPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/disease-risk"
+            element={<ProtectedRoute><DiseaseRiskPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/fertilizer"
+            element={<ProtectedRoute><FertilizerPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/reports"
+            element={<ProtectedRoute><ReportsPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/weather"
+            element={<ProtectedRoute><WeatherPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/fields"
+            element={<ProtectedRoute><FieldsPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/fields/new"
+            element={<ProtectedRoute><AddFieldPage /></ProtectedRoute>}
+          />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

@@ -1,12 +1,26 @@
-import { Bell, Search, User } from 'lucide-react';
+import { Bell, LogOut, Search, User } from 'lucide-react';
 import Sidebar from './Sidebar';
 import type React from 'react';
+import { useAuth } from '../../context/auth/authContext';
+import { useNavigate } from 'react-router-dom';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export default function AppLayout({ children }: AppLayoutProps): React.ReactElement {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = (): void => {
+    void logout().then(() => navigate('/login', { replace: true }));
+  };
+
+  // Derive initial for the avatar from user's full name
+  const initials = user?.fullName
+    ? user.fullName.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+    : '?';
+
   return (
     <div className="flex min-h-screen bg-[#f5f6f4]">
       <Sidebar />
@@ -26,16 +40,34 @@ export default function AppLayout({ children }: AppLayoutProps): React.ReactElem
 
           {/* Right actions */}
           <div className="flex items-center gap-3">
+
+            {user && (
+              <span className="text-sm text-gray-600 font-medium hidden sm:block">
+                {user.fullName}
+              </span>
+            )}
             {/* Notification bell */}
             <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
               <Bell size={18} className="text-gray-600" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
             </button>
 
-            {/* Avatar */}
-            <div className="w-9 h-9 rounded-full bg-[#2e5d40] flex items-center justify-center">
-              <User size={16} className="text-white" />
+            {/* Avatar with initials */}
+            <div 
+              className="w-9 h-9 rounded-full bg-[#2e5d40] flex items-center justify-center cursor-default select-none"
+              title={user?.fullName ?? ''}
+            >
+              <span className="text-white text-xs font-semibold">{initials}</span>
             </div>
+
+            {/* Logout button */}
+            <button
+              onClick={handleLogout}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-red-600"
+              title="Logout"
+            >
+              <LogOut size={18} />
+            </button>
           </div>
         </header>
 

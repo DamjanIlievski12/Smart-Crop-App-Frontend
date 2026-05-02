@@ -2,8 +2,8 @@ import AppLayout from '../components/layout/AppLayout';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Search, MapPin, TrendingUp } from 'lucide-react';
-import type { Field } from '../types/field';
-import type { StatCard } from '../types/ui';
+import type { Field } from '../api/types/field';
+import type { StatCard } from '../api/types/ui';
 import type { ChangeEvent, MouseEvent } from 'react';
 import type React from 'react';
 
