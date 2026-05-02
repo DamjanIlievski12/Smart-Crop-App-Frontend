@@ -26,9 +26,11 @@ export default function HeroSection(): React.ReactElement {
 
         {/* CTA buttons */}
         <div className="flex items-center gap-3 flex-wrap">
-          <Button variant="primary">
-            Get Started <ArrowRight size={15} />
-          </Button>
+          <Link to="/login?mode=signup">
+            <Button variant="primary">
+              Get Started <ArrowRight size={15} />
+            </Button>
+          </Link>
           <Link to="/login">
             <Button variant="outline">Login</Button>
           </Link>
