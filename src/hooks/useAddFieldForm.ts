@@ -7,7 +7,11 @@ import type {
   FieldPayload,
   SizeUnit,
 } from "../api/types/field";
-import { apiCreateField, apiImportFieldsCsv } from "../api/fieldsApi";
+import {
+  apiCreateField,
+  apiImportFieldsCsv,
+  apiReverseGeocodeLocation,
+} from "../api/fieldsApi";
 
 const initialForm: AddFieldForm = {
   name: "",
@@ -61,9 +65,9 @@ function convertSize(
 }
 
 function dtoToFormValues(dto: FieldDTO, unit: SizeUnit): Partial<AddFieldForm> {
-  const sizeinHa = dto.sizeValue?.toString() ?? "0";
-  const size =
-    unit === "acres" ? convertSize(sizeinHa, "hectares", "acres") : sizeinHa;
+  const dtoUnit = (dto.unit as SizeUnit) || "hectares";
+  const rawSize = dto.sizeValue?.toString() ?? "0";
+  const size = convertSize(rawSize, dtoUnit, unit);
 
   return {
     name: dto.name,
@@ -90,6 +94,8 @@ export interface UseAddFieldFormReturn {
   coordinateText: string;
   isSubmitting: boolean;
   submitError: string | null;
+  isResolvingLocation: boolean;
+  geocodeError: string | null;
   isCsvLoading: boolean;
   csvError: string | null;
   csvSuccess: string | null;
@@ -120,10 +126,13 @@ export function useAddFieldForm(): UseAddFieldFormReturn {
   const [coordinateText, setCoordinateText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isResolvingLocation, setIsResolvingLocation] = useState(false);
+  const [geocodeError, setGeocodeError] = useState<string | null>(null);
   const [isCsvLoading, setIsCsvLoading] = useState(false);
   const [csvError, setCsvError] = useState<string | null>(null);
   const [csvSuccess, setCsvSuccess] = useState<string | null>(null);
   const csvFileInputRef = useRef<HTMLInputElement | null>(null);
+  const latestGeocodeRequestRef = useRef(0);
 
   const set =
     <K extends keyof AddFieldForm>(key: K) =>
@@ -158,12 +167,48 @@ export function useAddFieldForm(): UseAddFieldFormReturn {
     }));
   };
 
-  const handleMapPick = (coords: FieldCoordinates): void => {
+  const handleMapPick = async (coords: FieldCoordinates): Promise<void> => {
+    const requestId = ++latestGeocodeRequestRef.current;
+
     setForm((f) => ({
       ...f,
       coordinates: coords,
     }));
     setCoordinateText(`${coords.latitude}, ${coords.longitude}`);
+    setIsResolvingLocation(true);
+    setGeocodeError(null);
+
+    try {
+      const response = await apiReverseGeocodeLocation(
+        coords.latitude,
+        coords.longitude,
+      );
+
+      if (requestId !== latestGeocodeRequestRef.current) {
+        return;
+      }
+
+      setForm((f) => ({
+        ...f,
+        location: response.location ?? "",
+      }));
+    } catch {
+      if (requestId !== latestGeocodeRequestRef.current) {
+        return;
+      }
+
+      setForm((f) => ({
+        ...f,
+        location: "",
+      }));
+      setGeocodeError(
+        "Could not resolve location name for these coordinates. Please pick another point.",
+      );
+    } finally {
+      if (requestId === latestGeocodeRequestRef.current) {
+        setIsResolvingLocation(false);
+      }
+    }
   };
 
   const handleCsvImport = async (file: File): Promise<void> => {
@@ -211,10 +256,25 @@ export function useAddFieldForm(): UseAddFieldFormReturn {
     setSubmitError(null);
 
     try {
-      const sizeNum =
-        form.unit === "acres"
-          ? parseFloat(form.size) * 0.404686
-          : parseFloat(form.size);
+      const sizeNum = parseFloat(form.size);
+
+      if (!form.name.trim()) {
+        setSubmitError("Field name is required.");
+        return;
+      }
+
+      // Allow empty location when coordinates are picked — use coords as fallback
+      const locationValue = form.location.trim();
+
+      if (!locationValue && !form.coordinates) {
+        setSubmitError("Location or coordinates is required.");
+        return;
+      }
+
+      if (!form.crop_type.trim()) {
+        setSubmitError("Crop type is required.");
+        return;
+      }
 
       if (isNaN(sizeNum) || sizeNum <= 0) {
         setSubmitError("Size must be a positive number.");
@@ -224,9 +284,11 @@ export function useAddFieldForm(): UseAddFieldFormReturn {
       const payload: FieldPayload = {
         name: form.name.trim(),
         size: sizeNum,
-        location: form.location.trim(),
+        size_unit: form.unit,
         crop_type: form.crop_type.trim(),
       };
+
+      if (locationValue) payload.location = locationValue;
 
       if (form.soil_type) payload.soil_type = form.soil_type;
       if (form.irrigation_type) payload.irrigation_type = form.irrigation_type;
@@ -268,6 +330,8 @@ export function useAddFieldForm(): UseAddFieldFormReturn {
     coordinateText,
     isSubmitting,
     submitError,
+    isResolvingLocation,
+    geocodeError,
     isCsvLoading,
     csvError,
     csvSuccess,

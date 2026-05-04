@@ -15,6 +15,8 @@ export default function AddFieldPage(): React.ReactElement {
     coordinateText,
     isSubmitting,
     submitError,
+    isResolvingLocation,
+    geocodeError,
     isCsvLoading,
     csvError,
     csvSuccess,
@@ -55,6 +57,8 @@ export default function AddFieldPage(): React.ReactElement {
         <LocationSection
           form={form}
           coordinateText={coordinateText}
+          isResolvingLocation={isResolvingLocation}
+          geocodeError={geocodeError}
           set={set}
           onCoordinateTextChange={handleCoordinateTextChange}
           onMapPick={handleMapPick}

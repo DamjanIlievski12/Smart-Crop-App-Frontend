@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import type {
     BadgeType,
     DiseaseAlert,
@@ -7,74 +8,8 @@ import type {
     TrendDataPoint,
     VulnerabilityFactor,
 } from '../api/types/disease';
-
-export interface UseDiseaseRiskReturn {
-    riskMetrics: RiskMetric[];
-    trendData: TrendDataPoint[];
-    vulnerabilityData: VulnerabilityFactor[];
-    diseaseAlerts: DiseaseAlert[];
-    recommendations: PreventionRecommendation[];
-    severityStyles: Record<SeverityLevel, string>;
-    getRecommendationBadgeStyle: (type: BadgeType) => string;
-}
-
-const riskMetrics: RiskMetric[] = [
-    { label: 'Fungal Risk', value: 15 },
-    { label: 'Viral Risk', value: 22 },
-    { label: 'Bacterial Risk', value: 12 },
-    { label: 'Soil Risk', value: 8 },
-];
-
-const trendData: TrendDataPoint[] = [
-    { month: 'Jan', risk: 28 },
-    { month: 'Feb', risk: 22 },
-    { month: 'Mar', risk: 30 },
-    { month: 'Apr', risk: 25 },
-    { month: 'May', risk: 20 },
-    { month: 'Jun', risk: 18 },
-];
-
-const vulnerabilityData: VulnerabilityFactor[] = [
-    { factor: 'Temperature', value: 65 },
-    { factor: 'Humidity', value: 72 },
-    { factor: 'Rainfall', value: 48 },
-    { factor: 'Soil Moisture', value: 55 },
-    { factor: 'Wind', value: 30 },
-];
-
-const diseaseAlerts: DiseaseAlert[] = [
-    {
-        name: 'Early Blight',
-        probability: 35,
-        severity: 'Medium',
-        symptoms: 'Brown spots with concentric rings on leaves',
-        prevention: 'Apply fungicide, improve air circulation',
-        barColor: '#f97316',
-    },
-    {
-        name: 'Powdery Mildew',
-        probability: 20,
-        severity: 'Low',
-        symptoms: 'White powdery coating on leaves and stems',
-        prevention: 'Reduce humidity, apply sulfur-based fungicide',
-        barColor: '#eab308',
-    },
-    {
-        name: 'Leaf Spot',
-        probability: 15,
-        severity: 'Low',
-        symptoms: 'Small dark spots on leaves',
-        prevention: 'Remove affected leaves, ensure proper spacing',
-        barColor: '#eab308',
-    },
-];
-
-const recommendations: PreventionRecommendation[] = [
-    { title: 'Crop Rotation', description: 'Rotate with non-solanaceous crops to break disease cycles', badge: 'Recommended' },
-    { title: 'Proper Spacing', description: 'Maintain 18-24 inch spacing for better air circulation', badge: 'Active' },
-    { title: 'Mulching', description: 'Apply organic mulch to prevent soil splash', badge: 'Recommended' },
-    { title: 'Early Detection', description: 'Regular monitoring and quick removal of infected plants', badge: 'Active' },
-];
+import { apiGetFields } from '../api/fieldsApi';
+import axiosInstance from '../axios/axios';
 
 const severityStyles: Record<SeverityLevel, string> = {
     Medium: 'bg-orange-100 text-orange-600',
@@ -82,19 +17,76 @@ const severityStyles: Record<SeverityLevel, string> = {
     High: 'bg-red-100 text-red-600',
 };
 
+export interface UseDiseaseRiskReturn {
+    riskMetrics: RiskMetric[];
+    overallRisk: number | null;
+    trendData: TrendDataPoint[];
+    vulnerabilityData: VulnerabilityFactor[];
+    diseaseAlerts: DiseaseAlert[];
+    recommendations: PreventionRecommendation[];
+    severityStyles: Record<SeverityLevel, string>;
+    getRecommendationBadgeStyle: (type: BadgeType) => string;
+    isLoading: boolean;
+    error: string | null;
+}
+
 export function useDiseaseRisk(): UseDiseaseRiskReturn {
+    const [riskMetrics, setRiskMetrics] = useState<RiskMetric[]>([]);
+    const [overallRisk, setOverallRisk] = useState<number | null>(null);
+    const [trendData, setTrendData] = useState<TrendDataPoint[]>([]);
+    const [vulnerabilityData, setVulnerabilityData] = useState<VulnerabilityFactor[]>([]);
+    const [diseaseAlerts, setDiseaseAlerts] = useState<DiseaseAlert[]>([]);
+    const [recommendations, setRecommendations] = useState<PreventionRecommendation[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function load() {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const fieldsRes = await apiGetFields();
+                const fields = fieldsRes.fields ?? [];
+                const firstField = fields[0];
+                if (!firstField) {
+                    setIsLoading(false);
+                    return;
+                }
+                const { data } = await axiosInstance.post('/diseases/assess', { field_id: firstField.id });
+
+                const metrics: RiskMetric[] = data.riskMetrics ?? [];
+                setRiskMetrics(metrics);
+                if (metrics.length > 0) {
+                    setOverallRisk(
+                        Math.round(metrics.reduce((sum, m) => sum + m.value, 0) / metrics.length),
+                    );
+                }
+                setTrendData(data.trendData ?? []);
+                setVulnerabilityData(data.vulnerabilityData ?? []);
+                setDiseaseAlerts(data.diseaseAlerts ?? []);
+                setRecommendations(data.recommendations ?? []);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to load disease risk data.');
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        void load();
+    }, []);
+
     const getRecommendationBadgeStyle = (type: BadgeType): string =>
-        type === 'Active'
-            ? 'bg-green-100 text-green-700'
-            : 'bg-blue-100 text-blue-600';
+        type === 'Active' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-600';
 
     return {
         riskMetrics,
+        overallRisk,
         trendData,
         vulnerabilityData,
         diseaseAlerts,
         recommendations,
         severityStyles,
         getRecommendationBadgeStyle,
+        isLoading,
+        error,
     };
 }

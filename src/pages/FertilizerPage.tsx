@@ -9,7 +9,18 @@ import { useFertilizer } from '../hooks/useFertilizer';
 import type React from 'react';
 
 export default function FertilizerPage(): React.ReactElement {
-  const { schedule, yieldData, guidelines, aiMetrics } = useFertilizer();
+  const {
+    schedule,
+    yieldData,
+    guidelines,
+    aiMetrics,
+    fields,
+    selectedFieldId,
+    setSelectedFieldId,
+    isLoading,
+    isExporting,
+    exportPdf,
+  } = useFertilizer();
 
   return (
     <AppLayout>
@@ -18,14 +29,26 @@ export default function FertilizerPage(): React.ReactElement {
         subtitle="AI-powered fertilizer optimization for maximum crop yield"
       />
 
-      <FieldSelectorRow />
-      <AIRecommendationCard metrics={aiMetrics} />
-      <ApplicationScheduleCard schedule={schedule} />
+      <FieldSelectorRow
+        fields={fields}
+        selectedFieldId={selectedFieldId}
+        onSelect={setSelectedFieldId}
+      />
 
-      <div className="flex gap-4">
-        <YieldImpactCard data={yieldData} />
-        <GuidelinesCard guidelines={guidelines} />
-      </div>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
+          Loading recommendation…
+        </div>
+      ) : (
+        <>
+          <AIRecommendationCard metrics={aiMetrics} onExportPdf={exportPdf} isExporting={isExporting} />
+          <ApplicationScheduleCard schedule={schedule} />
+          <div className="flex gap-4">
+            <YieldImpactCard data={yieldData} />
+            <GuidelinesCard guidelines={guidelines} />
+          </div>
+        </>
+      )}
     </AppLayout>
   );
 }

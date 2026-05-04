@@ -5,9 +5,10 @@ import type React from 'react';
 interface ReportsTableProps {
   reports: ReportRow[];
   typeBadgeStyles: Record<ReportType, string>;
+  onDownload: (id: number, name: string) => void;
 }
 
-export default function ReportsTable({ reports, typeBadgeStyles }: ReportsTableProps): React.ReactElement {
+export default function ReportsTable({ reports, typeBadgeStyles, onDownload }: ReportsTableProps): React.ReactElement {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 mb-4 overflow-hidden">
       {/* Table header */}
@@ -20,6 +21,11 @@ export default function ReportsTable({ reports, typeBadgeStyles }: ReportsTableP
         <p className="text-xs font-semibold text-gray-500">Status</p>
         <p className="text-xs font-semibold text-gray-500 text-right pr-2">Actions</p>
       </div>
+
+      {/* Empty state */}
+      {reports.length === 0 && (
+        <div className="px-5 py-12 text-center text-sm text-gray-400">No reports found.</div>
+      )}
 
       {/* Table rows */}
       {reports.map((r) => (
@@ -50,7 +56,12 @@ export default function ReportsTable({ reports, typeBadgeStyles }: ReportsTableP
             </span>
           </div>
           <div className="flex justify-end pr-2">
-            <button className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors">
+            <button
+              className="w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-40"
+              onClick={() => r.id != null && onDownload(r.id, r.name)}
+              disabled={r.id == null}
+              title={r.id == null ? 'No download available' : 'Download PDF'}
+            >
               <Download size={15} className="text-gray-600" />
             </button>
           </div>

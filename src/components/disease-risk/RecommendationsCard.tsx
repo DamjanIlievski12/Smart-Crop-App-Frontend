@@ -18,6 +18,9 @@ export default function RecommendationsCard({
         Prevention Recommendations
       </h2>
       <div className="grid grid-cols-2 gap-4">
+        {recommendations.length === 0 && (
+          <p className="col-span-2 text-sm text-gray-400 text-center py-6">No recommendations available.</p>
+        )}
         {recommendations.map((rec) => (
           <div key={rec.title} className="border border-gray-100 rounded-xl p-4 flex items-start justify-between gap-4">
             <div>

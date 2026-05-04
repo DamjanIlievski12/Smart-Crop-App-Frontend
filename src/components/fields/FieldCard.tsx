@@ -11,6 +11,7 @@ const RISK_CLASSES: Record<string, string> = {
   Low: "bg-green-100 text-green-700",
   Medium: "bg-yellow-100 text-yellow-700",
   High: "bg-red-100 text-red-700",
+  NotAssessed: "bg-gray-100 text-gray-500",
 };
 
 export default function FieldCard({ field }: Props): React.ReactElement {
@@ -31,9 +32,9 @@ export default function FieldCard({ field }: Props): React.ReactElement {
           />
         </div>
         <span
-          className={`text-xs px-2.5 py-1 rounded-full font-medium ${RISK_CLASSES[field.risk] ?? RISK_CLASSES.Low}`}
+          className={`text-xs px-2.5 py-1 rounded-full font-medium ${RISK_CLASSES[field.risk] ?? RISK_CLASSES['NotAssessed']}`}
         >
-          {field.risk} Risk
+          {field.risk === 'NotAssessed' ? 'Not Assessed' : `${field.risk} Risk`}
         </span>
       </div>
 
@@ -47,7 +48,7 @@ export default function FieldCard({ field }: Props): React.ReactElement {
         {(
           [
             { label: "Crop Type", value: field.crop },
-            { label: "Field Size", value: field.size },
+            { label: "Field Size", value: field._raw.size },
             { label: "Soil Type", value: field.soilType },
           ] as { label: string; value: string }[]
         ).map(({ label, value }) => (

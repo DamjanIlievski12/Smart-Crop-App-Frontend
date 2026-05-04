@@ -11,13 +11,32 @@ import type React from 'react';
 
 export default function WeatherPage(): React.ReactElement {
   const {
+    temp,
+    condition,
+    lastUpdated,
+    fieldLocation,
     currentMetrics,
     forecast,
     temperatureData,
     humidityData,
     rainfallData,
     impacts,
+    isLoading,
   } = useWeather();
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <PageHeader
+          title="Weather Analytics"
+          subtitle="Real-time weather monitoring and forecasting for your fields"
+        />
+        <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
+          Loading weather data…
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -26,7 +45,13 @@ export default function WeatherPage(): React.ReactElement {
         subtitle="Real-time weather monitoring and forecasting for your fields"
       />
 
-      <CurrentWeatherCard metrics={currentMetrics} />
+      <CurrentWeatherCard
+        metrics={currentMetrics}
+        temp={temp}
+        condition={condition}
+        location={fieldLocation}
+        lastUpdated={lastUpdated}
+      />
       <ForecastCard forecast={forecast} />
 
       <div className="flex gap-4 mb-4">

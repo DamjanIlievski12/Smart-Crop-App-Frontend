@@ -11,6 +11,9 @@ export default function GuidelinesCard({ guidelines }: GuidelinesCardProps): Rea
     <div className="w-[380px] bg-white rounded-2xl border border-gray-100 p-5">
       <h2 className="text-base font-semibold text-gray-900 mb-4">Application Guidelines</h2>
       <div className="flex flex-col gap-3">
+        {guidelines.length === 0 && (
+          <p className="text-sm text-gray-400 text-center py-6">No guidelines available.</p>
+        )}
         {guidelines.map((g) => (
           <div key={g.title} className="bg-green-50 rounded-xl p-4 flex items-start gap-3">
             <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">

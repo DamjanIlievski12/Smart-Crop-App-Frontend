@@ -23,13 +23,9 @@ export default function YieldImpactCard({ data }: YieldImpactCardProps): React.R
           <Line type="monotone" dataKey="yield" stroke="#2e5d40" strokeWidth={2} dot={{ r: 5, fill: '#2e5d40' }} />
         </LineChart>
       </ResponsiveContainer>
-      <div className="mt-4 bg-green-50 rounded-xl p-3 flex items-start gap-2">
-        <TrendingUp size={16} className="text-green-600 mt-0.5 flex-shrink-0" />
-        <div>
-          <p className="text-sm font-semibold text-green-700">Projected yield increase: 25-45%</p>
-          <p className="text-xs text-green-600">With optimal fertilizer application</p>
-        </div>
-      </div>
+      {data.length === 0 && (
+        <p className="text-sm text-gray-400 text-center py-4">No yield data available.</p>
+      )}
     </div>
   );
 }

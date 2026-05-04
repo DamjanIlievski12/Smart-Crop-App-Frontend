@@ -1,12 +1,13 @@
-import { TrendingDown, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import type { RiskMetric } from '../../api/types/disease';
 import type React from 'react';
 
 interface OverallRiskCardProps {
   riskMetrics: RiskMetric[];
+  overallRisk?: number | null;
 }
 
-export default function OverallRiskCard({ riskMetrics }: OverallRiskCardProps): React.ReactElement {
+export default function OverallRiskCard({ riskMetrics, overallRisk }: OverallRiskCardProps): React.ReactElement {
   return (
     <div className="rounded-2xl p-6 mb-4 bg-gradient-to-r from-[#1ea34c] to-[#2ecc71] flex gap-6">
       {/* Left – overall assessment */}
@@ -17,10 +18,7 @@ export default function OverallRiskCard({ riskMetrics }: OverallRiskCardProps): 
           </span>
         </div>
         <div className="flex items-end gap-3">
-          <span className="text-5xl font-bold text-white">18%</span>
-          <span className="flex items-center gap-1 text-sm text-white/80 font-medium mb-1">
-            <TrendingDown size={15} /> -5% from last month
-          </span>
+          <span className="text-5xl font-bold text-white">{overallRisk != null ? `${overallRisk}%` : '—'}</span>
         </div>
         <p className="text-sm text-white/70 mt-2">
           Low risk level. Your crops are in good health with minimal disease threat.

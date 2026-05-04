@@ -11,13 +11,29 @@ import type React from 'react';
 export default function DiseaseRiskPage(): React.ReactElement {
   const {
     riskMetrics,
+    overallRisk,
     trendData,
     vulnerabilityData,
     diseaseAlerts,
     recommendations,
     severityStyles,
     getRecommendationBadgeStyle,
+    isLoading,
   } = useDiseaseRisk();
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <PageHeader
+          title="Disease Risk Prediction"
+          subtitle="AI powered disease detection and prevention recommendations"
+        />
+        <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
+          Loading disease risk data…
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -26,7 +42,7 @@ export default function DiseaseRiskPage(): React.ReactElement {
         subtitle="AI powered disease detection and prevention recommendations"
       />
 
-      <OverallRiskCard riskMetrics={riskMetrics} />
+      <OverallRiskCard riskMetrics={riskMetrics} overallRisk={overallRisk} />
 
       <div className="flex gap-4 mb-4">
         <RiskTrendChart data={trendData} />

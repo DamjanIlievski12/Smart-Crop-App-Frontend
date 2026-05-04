@@ -1,4 +1,4 @@
-import { use, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { FieldCoordinates } from "../../api/types/field";
 import type React from "react";
 import L from "leaflet";
@@ -19,6 +19,8 @@ export default function LocationPickerMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   const createIcon = () =>
     L.divIcon({
@@ -50,13 +52,6 @@ export default function LocationPickerMap({
 
     const icon = createIcon();
 
-    if (value) {
-      markerRef.current = L.marker([value.latitude, value.longitude], {
-        icon,
-      }).addTo(map);
-      map.setView([value.latitude, value.longitude], DEFAULT_ZOOM);
-    }
-
     map.on("click", (e) => {
       const { lat, lng } = e.latlng;
       if (markerRef.current) {
@@ -65,7 +60,7 @@ export default function LocationPickerMap({
         markerRef.current = L.marker([lat, lng], { icon }).addTo(map);
       }
 
-      onChange({
+      onChangeRef.current({
         latitude: parseFloat(lat.toFixed(6)),
         longitude: parseFloat(lng.toFixed(6)),
       });
@@ -76,7 +71,7 @@ export default function LocationPickerMap({
       mapRef.current = null;
       markerRef.current = null;
     };
-  }, [onChange, value]);
+  }, []);
 
   // Sync external value changes (e.g. user typed coordinates manually)
   useEffect(() => {
