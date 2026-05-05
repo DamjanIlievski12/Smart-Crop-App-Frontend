@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 export interface CurrentWeatherMetric {
   label: string;
   value: string;
+  level?: string;
   icon: LucideIcon;
 }
 
@@ -30,7 +31,7 @@ export interface RainfallPoint {
   rainfall: number;
 }
 
-export type ImpactLevel = 'Excellent' | 'Good' | 'Moderate' | 'Poor';
+export type ImpactLevel = 'Excellent' | 'Good' | 'Moderate' | 'Poor' | 'Unknown';
 
 export interface WeatherImpact {
   label: string;

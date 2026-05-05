@@ -17,6 +17,7 @@ export type ReportType =
 export type ReportStatus = 'Completed' | 'Processing' | 'Failed';
 
 export interface ReportRow {
+  id?: number;
   name: string;
   field: string;
   type: ReportType;
@@ -33,4 +34,5 @@ export interface ExportOption {
   icon: LucideIcon;
   iconBg: string;
   iconColor: string;
+  onAction?: () => void;
 }

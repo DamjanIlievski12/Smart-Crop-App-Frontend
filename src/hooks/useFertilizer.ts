@@ -1,12 +1,32 @@
+import { useState, useEffect, useCallback } from 'react';
 import type {
     ApplicationGuideline,
     FertilizerScheduleItem,
     YieldDataPoint,
 } from '../api/types/fertilizer';
+import { apiGetFields } from '../api/fieldsApi';
+import axiosInstance from '../axios/axios';
+
+function triggerDownload(data: Blob, filename: string): void {
+    const url = URL.createObjectURL(data);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
 
 export interface AiMetric {
     label: string;
     value: string;
+}
+
+export interface FertilizerField {
+    id: number;
+    name: string;
+    crop: string;
 }
 
 export interface UseFertilizerReturn {
@@ -14,38 +34,95 @@ export interface UseFertilizerReturn {
     yieldData: YieldDataPoint[];
     guidelines: ApplicationGuideline[];
     aiMetrics: AiMetric[];
+    fields: FertilizerField[];
+    selectedFieldId: number | null;
+    setSelectedFieldId: (id: number) => void;
+    isLoading: boolean;
+    isExporting: boolean;
+    error: string | null;
+    exportPdf: () => Promise<void>;
 }
 
-const schedule: FertilizerScheduleItem[] = [
-    { week: 'Week 1', dates: 'March 28 - April 3', type: 'Urea (46-0-0)', rate: '50 kg/acre', status: 'Pending', statusColor: 'bg-orange-100 text-orange-600' },
-    { week: 'Week 4', dates: 'April 18 - 24', type: 'NPK (15-15-15)', rate: '40 kg/acre', status: 'Scheduled', statusColor: 'bg-blue-100 text-blue-600' },
-    { week: 'Week 8', dates: 'May 16 - 22', type: 'Potash (0-0-60)', rate: '30 kg/acre', status: 'Scheduled', statusColor: 'bg-blue-100 text-blue-600' },
-];
-
-const yieldData: YieldDataPoint[] = [
-    { stage: 'Current', yield: 95 },
-    { stage: 'After Application', yield: 120 },
-    { stage: 'Expected Peak', yield: 145 },
-];
-
-const guidelines: ApplicationGuideline[] = [
-    { title: 'Best Time to Apply', text: 'Early morning or late evening when temperature is below 25°C' },
-    { title: 'Application Method', text: 'Broadcast evenly and incorporate into top 2-3 inches of soil' },
-    { title: 'Precautions', text: 'Avoid application before heavy rain. Water crops lightly after application' },
-    { title: 'Monitoring', text: 'Check soil nutrient levels 2 weeks after each application' },
-];
-
-const aiMetrics: AiMetric[] = [
-    { label: 'Recommended Type', value: 'NPK 15-15-15' },
-    { label: 'Application Rate', value: '120 kg/acre' },
-    { label: 'Expected Yield Increase', value: '+25-45%' },
-];
-
 export function useFertilizer(): UseFertilizerReturn {
+    const [fields, setFields] = useState<FertilizerField[]>([]);
+    const [selectedFieldId, setSelectedFieldId] = useState<number | null>(null);
+    const [schedule, setSchedule] = useState<FertilizerScheduleItem[]>([]);
+    const [yieldData, setYieldData] = useState<YieldDataPoint[]>([]);
+    const [guidelines, setGuidelines] = useState<ApplicationGuideline[]>([]);
+    const [aiMetrics, setAiMetrics] = useState<AiMetric[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isExporting, setIsExporting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function loadFields() {
+            try {
+                const res = await apiGetFields();
+                const loaded = (res.fields ?? []).map((f) => ({ id: f.id, name: f.name, crop: f.crop }));
+                setFields(loaded);
+                if (loaded[0]) setSelectedFieldId(loaded[0].id);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to load fields.');
+                setIsLoading(false);
+            }
+        }
+        void loadFields();
+    }, []);
+
+    const fetchRecommendation = useCallback(async (fieldId: number) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const { data } = await axiosInstance.post('/fertilizer/recommend', { field_id: fieldId });
+            setAiMetrics(data.aiMetrics ?? []);
+            setSchedule(data.schedule ?? []);
+            setYieldData(data.yieldData ?? data.yield_data ?? []);
+            setGuidelines(data.guidelines ?? []);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to load fertilizer recommendation.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (selectedFieldId !== null) {
+            void fetchRecommendation(selectedFieldId);
+        }
+    }, [selectedFieldId, fetchRecommendation]);
+
+    const exportPdf = useCallback(async () => {
+        if (selectedFieldId === null) return;
+        setIsExporting(true);
+        try {
+            const { data: report } = await axiosInstance.post('/reports/generate', {
+                field_id: selectedFieldId,
+                report_type: 'Fertilizer',
+            });
+            const reportId = report.id ?? report.report?.id;
+            if (!reportId) return;
+            const { data: file } = await axiosInstance.get(`/reports/${reportId}/download/pdf`, {
+                responseType: 'blob',
+            });
+            triggerDownload(file as Blob, `fertilizer-report-${selectedFieldId}.pdf`);
+        } catch {
+            // silently ignore
+        } finally {
+            setIsExporting(false);
+        }
+    }, [selectedFieldId]);
+
     return {
         schedule,
         yieldData,
         guidelines,
         aiMetrics,
+        fields,
+        selectedFieldId,
+        setSelectedFieldId,
+        isLoading,
+        isExporting,
+        error,
+        exportPdf,
     };
 }

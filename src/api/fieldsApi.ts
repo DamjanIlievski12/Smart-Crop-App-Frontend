@@ -7,6 +7,7 @@ import type {
   GetFieldResponse,
   GetFieldsResponse,
   ImportFieldsResponse,
+  ReverseGeocodeResponse,
   UpdateFieldResponse,
 } from "./types/field";
 
@@ -58,5 +59,21 @@ export async function apiImportFieldsCsv(
     form,
   );
 
+  return data;
+}
+
+export async function apiReverseGeocodeLocation(
+  latitude: number,
+  longitude: number,
+): Promise<ReverseGeocodeResponse> {
+  const { data } = await axiosInstance.get<ReverseGeocodeResponse>(
+    "/fields/reverse-geocode",
+    {
+      params: {
+        lat: latitude,
+        lng: longitude,
+      },
+    },
+  );
   return data;
 }

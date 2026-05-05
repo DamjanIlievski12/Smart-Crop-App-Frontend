@@ -6,6 +6,8 @@ import LocationPickerMap from "../map/LocationPickerMap";
 interface Props {
   form: AddFieldForm;
   coordinateText: string;
+  isResolvingLocation: boolean;
+  geocodeError: string | null;
   set: <K extends keyof AddFieldForm>(
     key: K,
   ) => (
@@ -20,6 +22,8 @@ interface Props {
 export default function LocationSection({
   form,
   coordinateText,
+  isResolvingLocation,
+  geocodeError,
   set,
   onCoordinateTextChange,
   onMapPick,
@@ -32,6 +36,14 @@ export default function LocationSection({
           Click on the map to pin your field's location, or enter coordinates
           manually below.
         </p>
+        {isResolvingLocation ? (
+          <p className="text-xs text-gray-500 mb-2">
+            Resolving address from selected coordinates...
+          </p>
+        ) : null}
+        {geocodeError ? (
+          <p className="text-xs text-amber-600 mb-2">{geocodeError}</p>
+        ) : null}
         <LocationPickerMap
           value={form.coordinates ?? undefined}
           onChange={onMapPick}

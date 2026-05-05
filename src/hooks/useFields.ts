@@ -1,4 +1,4 @@
-import { use, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type {
   Field,
   FieldCoordinates,
@@ -88,8 +88,6 @@ function dtoToField(dto: FieldDTO): Field {
           longitude: 0,
         };
 
-  const health = dto.health ?? null;
-
   const status: FieldStatus = isValidStatus(dto.status)
     ? dto.status
     : "Monitoring";
@@ -145,7 +143,7 @@ export function useFields(): UseFieldsReturn {
 
     try {
       const response = await apiGetFields();
-      setFields(response.fields.map(dtoToField));
+      setFields((response.fields ?? []).map(dtoToField));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load fields.");
     } finally {
@@ -177,7 +175,10 @@ export function useFields(): UseFieldsReturn {
     return matchSearch && matchCrop && matchStatus;
   });
 
-  const totalHa = fields.reduce((sum, f) => sum + f.size, 0);
+  const totalHa = fields.reduce((sum, f) => {
+    const unit = f._raw.unit || "hectares";
+    return sum + (unit === "acres" ? f.size * 0.404686 : f.size);
+  }, 0);
   const avgHealth = fields.length
     ? Math.round(fields.reduce((s, f) => s + f.health, 0) / fields.length)
     : 0;

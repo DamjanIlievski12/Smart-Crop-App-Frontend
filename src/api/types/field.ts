@@ -42,9 +42,10 @@ export interface FieldDTO {
 export interface FieldPayload {
   name: string;
   size: number;
-  location: string;
+  location?: string;
   crop_type: string;
 
+  size_unit?: string;
   soil_type?: string;
   irrigation_type?: string;
   notes?: string;
@@ -52,6 +53,11 @@ export interface FieldPayload {
 
   latitude?: number;
   longitude?: number;
+}
+
+export interface ReverseGeocodeResponse {
+  success: boolean;
+  location: string;
 }
 
 // API reponse envelopes
