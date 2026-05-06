@@ -1,12 +1,8 @@
 import { Bell, LogOut, Search, MapPin, FileText } from "lucide-react";
 import Sidebar from "./Sidebar";
 import type React from "react";
-import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "../../context/auth/authContext";
 import { useNavigate } from "react-router-dom";
-import { apiGetFields } from "../../api/fieldsApi";
-import type { FieldDTO } from "../../api/types/field";
-import { apiGetReports } from "../../api/reportApi";
 import { useGlobalSearch } from "../../hooks/useGlobalSearch";
 
 interface AppLayoutProps {

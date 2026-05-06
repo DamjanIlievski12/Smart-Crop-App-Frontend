@@ -1,7 +1,7 @@
-import { ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Button from '../ui/Button';
-import type React from 'react';
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import Button from "../ui/Button";
+import type React from "react";
 
 export default function HeroSection(): React.ReactElement {
   return (
@@ -20,8 +20,8 @@ export default function HeroSection(): React.ReactElement {
 
         {/* Description */}
         <p className="text-base text-gray-500 leading-relaxed max-w-md">
-          AI-powered crop recommendations for healthier, smarter farming.
-          Make data-driven decisions to maximize your harvest.
+          AI-powered crop recommendations for healthier, smarter farming. Make
+          data-driven decisions to maximize your harvest.
         </p>
 
         {/* CTA buttons */}
@@ -40,12 +40,6 @@ export default function HeroSection(): React.ReactElement {
       {/* Right – hero image */}
       <div className="flex-1 w-full md:max-w-[460px]">
         <div className="rounded-2xl overflow-hidden shadow-lg aspect-[4/3]">
-          {/*
-            To use your own photo: place it in src/assets/images/hero-farm.jpg
-            and replace the img below with:
-              import heroFarm from '../assets/images/hero-farm.jpg';
-              <img src={heroFarm} ... />
-          */}
           <img
             src="https://images.unsplash.com/photo-1771181999292-50489609eab9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhZ3JpY3VsdHVyZSUyMGZhcm0lMjBmaWVsZCUyMGdyZWVuJTIwY3JvcHN8ZW58MXx8fHwxNzc0NTUxMjY3fDA&ixlib=rb-4.1.0&q=80&w=1080"
             alt="Green farm field with crop rows"

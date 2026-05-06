@@ -5,11 +5,7 @@ import {
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
-import type {
-  Priority,
-  Recommendation,
-  RecommendationType,
-} from "../api/types/analysis";
+import type { Recommendation, RecommendationType } from "../api/types/analysis";
 import type { FieldDTO } from "../api/types/field";
 import { useEffect, useEffectEvent, useState } from "react";
 import { apiGetFields } from "../api/fieldsApi";

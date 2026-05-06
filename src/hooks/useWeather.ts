@@ -19,10 +19,8 @@ import type {
   HumidityPoint,
   RainfallPoint,
   WeatherImpact,
-  ImpactLevel,
 } from "../api/types/weather";
 import { apiGetFields } from "../api/fieldsApi";
-import axiosInstance from "../axios/axios";
 import { apiGetWeatherDashboard } from "../api/weatherApi";
 import toImpactLevel from "../components/weather/utils/weatherHelpers";
 
@@ -101,9 +99,6 @@ export function useWeather(): UseWeatherReturn {
           return;
         }
         setFieldLocation(firstField.location);
-        // const { data } = await axiosInstance.get('/weather/dashboard', {
-        //     params: { location: firstField.location, country: 'MK' },
-        // });
         const data = await apiGetWeatherDashboard(firstField.location);
 
         setTemp(data.current?.temperature ?? null);

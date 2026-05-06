@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import Button from '../ui/Button';
-import Logo from '../ui/Logo';
-import type React from 'react';
-import { useAuth } from '../../context/auth/authContext';
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import Button from "../ui/Button";
+import Logo from "../ui/Logo";
+import type React from "react";
+import { useAuth } from "../../context/auth/authContext";
 
 export default function Navbar(): React.ReactElement {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -12,7 +12,7 @@ export default function Navbar(): React.ReactElement {
   const navigate = useNavigate();
 
   const handleLogout = (): void => {
-    void logout().then(() => navigate('/', { replace: true })); 
+    void logout().then(() => navigate("/", { replace: true }));
   };
 
   return (
@@ -28,11 +28,13 @@ export default function Navbar(): React.ReactElement {
               <Link to="/fields">
                 <Button variant="ghost">Dashboard</Button>
               </Link>
-              <Button variant="primary" onClick={handleLogout}>Logout</Button>
+              <Button variant="primary" onClick={handleLogout}>
+                Logout
+              </Button>
             </>
           ) : (
             <>
-              <Link to="/login"> // later change to dashboard
+              <Link to="/login">
                 <Button variant="ghost">Login</Button>
               </Link>
               <Link to="/login?mode=signup">
@@ -40,7 +42,6 @@ export default function Navbar(): React.ReactElement {
               </Link>
             </>
           )}
-        
         </nav>
 
         {/* Mobile hamburger */}
@@ -59,19 +60,32 @@ export default function Navbar(): React.ReactElement {
           {user ? (
             <>
               <Link to="/fields" onClick={() => setMobileOpen(false)}>
-                <Button variant="ghost" className="w-full justify-center">Dashboard</Button>
+                <Button variant="ghost" className="w-full justify-center">
+                  Dashboard
+                </Button>
               </Link>
-              <Button variant="primary" className="w-full justify-center" onClick={handleLogout}>
+              <Button
+                variant="primary"
+                className="w-full justify-center"
+                onClick={handleLogout}
+              >
                 Logout
               </Button>
             </>
           ) : (
             <>
               <Link to="/login" onClick={() => setMobileOpen(false)}>
-                <Button variant="ghost" className="w-full justify-center">Login</Button>
+                <Button variant="ghost" className="w-full justify-center">
+                  Login
+                </Button>
               </Link>
-              <Link to="/login?mode=signup" onClick={() => setMobileOpen(false)}>
-                <Button variant="primary" className="w-full justify-center">Get Started</Button>
+              <Link
+                to="/login?mode=signup"
+                onClick={() => setMobileOpen(false)}
+              >
+                <Button variant="primary" className="w-full justify-center">
+                  Get Started
+                </Button>
               </Link>
             </>
           )}

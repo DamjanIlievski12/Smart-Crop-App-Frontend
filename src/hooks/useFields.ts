@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type {
   Field,
-  FieldCoordinates,
   FieldDTO,
   FieldStatus,
   RiskLevel,
@@ -32,51 +31,6 @@ function isValidRisk(value: unknown): value is RiskLevel {
 }
 
 function dtoToField(dto: FieldDTO): Field {
-  // const ageMs = Date.now() - new Date(dto.created_at).getTime();
-  // const ageDays = ageMs / (1000 * 60 * 60 * 24);
-  // const health = Math.max(70, Math.min(98, Math.round(95 - ageDays * 0.3)));
-  // const risk: RiskLevel =
-  //   health >= 90 ? "Low" : health >= 80 ? "Medium" : "High";
-  // const status: FieldStatus =
-  //   health >= 95
-  //     ? "Excellent"
-  //     : health >= 90
-  //       ? "Healthy"
-  //       : health >= 80
-  //         ? "Good"
-  //         : "Monitoring";
-  // const lastAnalysis =
-  //   ageDays < 1
-  //     ? "Today"
-  //     : ageDays < 2
-  //       ? "1 day ago"
-  //       : ageDays < 7
-  //         ? `${Math.round(ageDays)} days ago`
-  //         : `${Math.round(ageDays / 7)} week(s) ago`;
-
-  // let coordinates: FieldCoordinates | undefined;
-  // const coordMatch = dto.location.match(/^(-?\d+\.?\d*),\s*(-?\d+\.?\d*)$/);
-  // if (coordMatch) {
-  //   coordinates = {
-  //     latitude: parseFloat(coordMatch[1]),
-  //     longitude: parseFloat(coordMatch[2]),
-  //   };
-  // }
-
-  // return {
-  //   id: dto.id,
-  //   name: dto.name,
-  //   crop: dto.crop_type,
-  //   location: dto.location,
-  //   size: dto.size,
-  //   status,
-  //   soilType: dto.soil_type ?? "-",
-  //   lastAnalysis,
-  //   health,
-  //   risk,
-  //   coordinates,
-  //   _raw: dto,
-  // };
   const coordinates =
     dto.latitude != null && dto.longitude != null
       ? {

@@ -9,7 +9,6 @@ import type {
   VulnerabilityFactor,
 } from "../api/types/disease";
 import { apiGetFields } from "../api/fieldsApi";
-import axiosInstance from "../axios/axios";
 import { apiAssessDiseaseRisk } from "../api/diseaseApi";
 
 const severityStyles: Record<SeverityLevel, string> = {
@@ -57,9 +56,6 @@ export function useDiseaseRisk(): UseDiseaseRiskReturn {
           setIsLoading(false);
           return;
         }
-        // const { data } = await axiosInstance.post("/diseases/assess", {
-        //   field_id: firstField.id,
-        // });
         const data = await apiAssessDiseaseRisk(firstField.id);
 
         const metrics: RiskMetric[] = data.riskMetrics ?? [];

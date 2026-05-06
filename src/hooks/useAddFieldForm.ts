@@ -27,14 +27,6 @@ const initialForm: AddFieldForm = {
 };
 
 function parseCoordinateString(raw: string): FieldCoordinates | undefined {
-  // const parts = raw.split(',').map(s => parseFloat(s.trim()));
-  // if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-  //     return {
-  //         latitude: parts[0],
-  //         longitude: parts[1],
-  //     }
-  // }
-  // return undefined;
   const [latStr, lngStr] = raw.split(",");
 
   if (!latStr || !lngStr) return undefined;
@@ -302,19 +294,6 @@ export function useAddFieldForm(): UseAddFieldFormReturn {
 
       await apiCreateField(payload);
 
-      // await apiCreateField({
-      //   name: form.name.trim(),
-      //   size: sizeNum,
-      //   location: form.location.trim(),
-      //   crop_type: form.crop_type.trim(),
-      //   soil_type: form.soil_type || undefined,
-      //   irrigation_type: form.irrigation_type || undefined,
-      //   notes: form.notes || undefined,
-      //   planting_date: form.plantingDate || undefined,
-
-      //   latitude: form.coordinates?.latitude,
-      //   longitude: form.coordinates?.longitude,
-      // });
       navigate("/fields");
     } catch (err) {
       setSubmitError(
