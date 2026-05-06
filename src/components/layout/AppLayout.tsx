@@ -7,13 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { apiGetFields } from "../../api/fieldsApi";
 import type { FieldDTO } from "../../api/types/field";
 import { apiGetReports } from "../../api/reportApi";
-
-interface ReportResult {
-  id: number;
-  name: string;
-  type: string;
-  field: string;
-}
+import { useGlobalSearch } from "../../hooks/useGlobalSearch";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -25,19 +19,24 @@ export default function AppLayout({
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [query, setQuery] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [allFields, setAllFields] = useState<FieldDTO[]>([]);
-  const [allReports, setAllReports] = useState<ReportResult[]>([]);
-  const [dataLoaded, setDataLoaded] = useState(false);
-  const [fieldResults, setFieldResults] = useState<FieldDTO[]>([]);
-  const [reportResults, setReportResults] = useState<ReportResult[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const {
+    query,
+    isOpen,
+    fieldResults,
+    reportResults,
+    containerRef,
+    handleInputChange,
+    handleKeyDown,
+    handleFocus,
+    selectField,
+    selectReport,
+  } = useGlobalSearch();
 
   const handleLogout = (): void => {
     void logout().then(() => navigate("/login", { replace: true }));
   };
 
+  // Derive initial for the avatar from user's full name
   const initials = user?.fullName
     ? user.fullName
         .split(" ")
@@ -46,110 +45,6 @@ export default function AppLayout({
         .join("")
         .toUpperCase()
     : "?";
-
-  const loadData = useCallback(async () => {
-    if (dataLoaded) return;
-    try {
-      const [fieldsRes, reportsRes] = await Promise.all([
-        apiGetFields(),
-        apiGetReports(),
-      ]);
-      setAllFields(fieldsRes.fields ?? []);
-      setAllReports(
-        reportsRes.map((r) => ({
-          id: r.id ?? 0,
-          name: r.name,
-          type: r.type,
-          field: r.field ?? "—",
-        })),
-      );
-      setDataLoaded(true);
-    } catch {
-      // search won't show results if data fails to load
-    }
-  }, [dataLoaded]);
-
-  // Filter results whenever query or cached data changes
-  useEffect(() => {
-    const trimmed = query.trim().toLowerCase();
-    if (!trimmed) {
-      setFieldResults([]);
-      setReportResults([]);
-      setIsOpen(false);
-      return;
-    }
-    setFieldResults(
-      allFields
-        .filter(
-          (f) =>
-            f.name.toLowerCase().includes(trimmed) ||
-            f.crop.toLowerCase().includes(trimmed) ||
-            f.location.toLowerCase().includes(trimmed),
-        )
-        .slice(0, 5),
-    );
-    setReportResults(
-      allReports
-        .filter(
-          (r) =>
-            r.name.toLowerCase().includes(trimmed) ||
-            r.type.toLowerCase().includes(trimmed) ||
-            r.field.toLowerCase().includes(trimmed),
-        )
-        .slice(0, 5),
-    );
-  }, [query, allFields, allReports]);
-
-  // Open/close dropdown based on results
-  useEffect(() => {
-    setIsOpen(fieldResults.length > 0 || reportResults.length > 0);
-  }, [fieldResults, reportResults]);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
-  }, []);
-
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const val = e.target.value;
-    setQuery(val);
-    if (val.trim() && !dataLoaded) void loadData();
-  }
-
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Escape") {
-      setIsOpen(false);
-      setQuery("");
-    }
-  }
-
-  function handleFocus() {
-    if (query.trim()) {
-      if (!dataLoaded) void loadData();
-      if (fieldResults.length > 0 || reportResults.length > 0) setIsOpen(true);
-    }
-  }
-
-  function selectField() {
-    setIsOpen(false);
-    setQuery("");
-    navigate("/fields");
-  }
-
-  function selectReport() {
-    setIsOpen(false);
-    setQuery("");
-    navigate("/reports");
-  }
 
   const hasResults = fieldResults.length > 0 || reportResults.length > 0;
 
@@ -245,11 +140,13 @@ export default function AppLayout({
               </span>
             )}
 
+            {/* Notification bell */}
             <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
               <Bell size={18} className="text-gray-600" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
             </button>
 
+            {/* Avatar with initials */}
             <div
               className="w-9 h-9 rounded-full bg-[#2e5d40] flex items-center justify-center cursor-default select-none"
               title={user?.fullName ?? ""}
@@ -259,6 +156,7 @@ export default function AppLayout({
               </span>
             </div>
 
+            {/* Logout button */}
             <button
               onClick={handleLogout}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-red-600"
