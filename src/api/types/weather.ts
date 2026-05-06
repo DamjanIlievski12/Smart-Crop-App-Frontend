@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from "lucide-react";
 
 export interface CurrentWeatherMetric {
   label: string;
@@ -31,7 +31,12 @@ export interface RainfallPoint {
   rainfall: number;
 }
 
-export type ImpactLevel = 'Excellent' | 'Good' | 'Moderate' | 'Poor' | 'Unknown';
+export type ImpactLevel =
+  | "Excellent"
+  | "Good"
+  | "Moderate"
+  | "Poor"
+  | "Unknown";
 
 export interface WeatherImpact {
   label: string;
@@ -43,4 +48,40 @@ export interface WeatherImpact {
   iconColor: string;
   barColor: string;
   levelColor: string;
+}
+
+export interface WeatherDashboardResponse {
+  current?: {
+    temperature?: number;
+    description?: string;
+    lastUpdated?: string;
+  };
+  currentMetrics?: Array<{
+    label: string;
+    value: string;
+    level?: string;
+    iconName?: string;
+  }>;
+  forecast?: Array<{
+    day: string;
+    date: string;
+    temp: number;
+    humidity: number;
+    rainfall?: number;
+    description?: string;
+  }>;
+  temperatureData?: Array<{ time: string; temp: number }>;
+  humidityData?: Array<{ day: string; humidity: number }>;
+  rainfallData?: Array<{ month: string; rainfall: number }>;
+  impacts?: Array<{
+    label: string;
+    description: string;
+    level: string;
+    percent: number;
+    iconName?: string;
+    iconBg: string;
+    iconColor: string;
+    barColor: string;
+    levelColor: string;
+  }>;
 }

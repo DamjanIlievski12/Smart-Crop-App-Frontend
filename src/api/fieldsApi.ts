@@ -2,7 +2,6 @@ import axiosInstance from "../axios/axios";
 import type {
   CreateFieldResponse,
   DeleteFieldResponse,
-  Field,
   FieldPayload,
   GetFieldResponse,
   GetFieldsResponse,

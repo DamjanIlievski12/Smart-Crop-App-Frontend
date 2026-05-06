@@ -4,9 +4,6 @@ const TOKEN_KEY = "sc_access_token";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  // headers: {
-  //     "Content-Type": "application/json",
-  // },
 });
 
 // Attach Bearer token to every request when available

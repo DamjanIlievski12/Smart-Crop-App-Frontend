@@ -1,5 +1,5 @@
-export type SeverityLevel = 'Low' | 'Medium' | 'High';
-export type BadgeType = 'Active' | 'Recommended';
+export type SeverityLevel = "Low" | "Medium" | "High";
+export type BadgeType = "Active" | "Recommended";
 
 export interface RiskMetric {
   label: string;
@@ -29,4 +29,12 @@ export interface PreventionRecommendation {
   title: string;
   description: string;
   badge: BadgeType;
+}
+
+export interface DiseaseAssessmentResponse {
+  riskMetrics?: RiskMetric[];
+  trendData?: TrendDataPoint[];
+  vulnerabilityData?: VulnerabilityFactor[];
+  diseaseAlerts?: DiseaseAlert[];
+  recommendations?: PreventionRecommendation[];
 }
