@@ -35,7 +35,7 @@ export interface UseFieldDetailsReturn {
     key: K,
     value: EditFieldForm[K],
   ) => void;
-  submitEdit: (e: React.SubmitEvent<HTMLFormElement>) => void;
+  submitEdit: (e: React.SubmitEvent) => void;
 
   // Delete
   deleteState: DeleteState;

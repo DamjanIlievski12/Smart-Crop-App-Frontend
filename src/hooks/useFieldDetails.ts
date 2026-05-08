@@ -10,10 +10,13 @@ import {
   dtoToEditForm,
   dtoToField,
 } from "../components/field-details/utils/fieldDetailsHelpers";
+import { useNavigate } from "react-router-dom";
 
 const DELETE_COUNTDOWN = 10; // second before auto-delete
 
 export function useFieldDetails(fieldId: number): UseFieldDetailsReturn {
+  const navigate = useNavigate();
+
   const [field, setField] = useState<Field | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +60,10 @@ export function useFieldDetails(fieldId: number): UseFieldDetailsReturn {
       setIsLoading(false);
     }
   }, [fieldId]);
+
+  useEffect(() => {
+    void fetchField();
+  }, [fetchField]);
 
   // Cleanup countdown on unmount
   useEffect(() => {
@@ -209,7 +216,4 @@ export function useFieldDetails(fieldId: number): UseFieldDetailsReturn {
     confirmDelete,
     undoDelete,
   };
-}
-function navigate(arg0: string) {
-  throw new Error("Function not implemented.");
 }
