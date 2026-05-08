@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import DiseaseRiskPage from "./pages/DiseaseRiskPage";
 import FertilizerPage from "./pages/FertilizerPage";
@@ -12,6 +12,7 @@ import type React from "react";
 import { AuthProvider } from "./providers/AuthProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import FieldDetailsPage from "./pages/FieldDetailsPage";
+import DashboardPage from "./pages/DashboardPage";
 
 export default function App(): React.ReactElement {
   return (
@@ -22,6 +23,14 @@ export default function App(): React.ReactElement {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           // Protected routes
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/crop-analysis"
             element={
@@ -86,6 +95,8 @@ export default function App(): React.ReactElement {
               </ProtectedRoute>
             }
           />
+          // Catch-all: redirect to dashboard
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
