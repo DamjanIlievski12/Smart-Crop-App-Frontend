@@ -21,7 +21,7 @@ export interface UseGlobalSearchReturn {
   handleInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
   handleFocus: (e: FocusEvent<HTMLInputElement>) => void;
-  selectField: () => void;
+  selectField: (fieldId: number) => void;
   selectReport: () => void;
 }
 
@@ -129,10 +129,10 @@ export function useGlobalSearch(): UseGlobalSearchReturn {
     }
   }
 
-  function selectField() {
+  function selectField(fieldId: number) {
     setIsOpen(false);
     setQuery("");
-    navigate("/fields");
+    navigate(`/fields/${fieldId}`);
   }
 
   function selectReport() {

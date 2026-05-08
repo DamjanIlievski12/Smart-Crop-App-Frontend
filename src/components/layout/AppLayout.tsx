@@ -77,7 +77,7 @@ export default function AppLayout({
                     {fieldResults.map((f) => (
                       <button
                         key={f.id}
-                        onClick={selectField}
+                        onClick={() => selectField(f.id)}
                         className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors text-left"
                       >
                         <MapPin
