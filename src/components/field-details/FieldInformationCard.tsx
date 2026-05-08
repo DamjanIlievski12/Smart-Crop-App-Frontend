@@ -28,6 +28,11 @@ export default function FieldInformationCard({
     ? new Date(raw.plantingDate).toLocaleDateString()
     : "—";
 
+  const coordinates =
+    raw.latitude != null && raw.longitude != null
+      ? `${raw.latitude.toFixed(6)}, ${raw.longitude.toFixed(6)}`
+      : "—";
+
   return (
     <div
       className="bg-white border rounded-xl p-6"
@@ -42,7 +47,7 @@ export default function FieldInformationCard({
         <Row label="Soil Type" value={field.soilType} />
         <Row label="Irrigation" value={raw.irrigation ?? "—"} />
         <Row label="Planting Date" value={plantingDate} />
-        <Row label="Country" value={raw.country ?? "—"} />
+        <Row label="Coordinates" value={coordinates} />
         {raw.notes && <Row label="Notes" value={raw.notes} />}
       </div>
     </div>

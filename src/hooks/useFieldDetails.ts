@@ -74,9 +74,12 @@ export function useFieldDetails(fieldId: number): UseFieldDetailsReturn {
 
   // Edit handlers
   const openEdit = useCallback(() => {
+    if (field) {
+      setEditForm(dtoToEditForm(field._raw));
+    }
     setUpdateError(null);
     setIsEditOpen(true);
-  }, []);
+  }, [field]);
 
   const closeEdit = useCallback(() => {
     setIsEditOpen(false);

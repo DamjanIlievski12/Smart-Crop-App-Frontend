@@ -9,6 +9,21 @@ const inputStyle: React.CSSProperties = {
 };
 const focusRingStyle = "focus:ring-[#2e5d40]/20 focus:border-[#2e5d40]";
 
+const CROP_OPTIONS = [
+  "Wheat",
+  "Corn",
+  "Rice",
+  "Tomato",
+  "Pepper",
+  "Cucumber",
+  "Lettuce",
+  "Carrot",
+  "Potato",
+  "Soybean",
+  "Cotton",
+  "Barley",
+];
+
 const SOIL_TYPES = ["Loamy", "Clay", "Sandy", "Sandy Loam", "Silty", "Peat"];
 const IRRIGATION_TYPES = [
   "Drip Irrigation",
@@ -75,7 +90,7 @@ export default function EditFieldModal({
           <div>
             <div className="grid sm:grid-cols-2 gap-4">
               <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                Field Name *
+                Field Name
               </label>
               <input
                 type="text"
@@ -88,16 +103,22 @@ export default function EditFieldModal({
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                Crop Type *
+                Crop Type
               </label>
-              <input
-                type="text"
+              <select
                 value={form.crop_type}
                 onChange={(e) => onChange("crop_type", e.target.value)}
                 className={`${inputClass} ${focusRingStyle}`}
                 style={inputStyle}
                 required
-              />
+              >
+                <option value="">Select crop type</option>
+                {CROP_OPTIONS.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
