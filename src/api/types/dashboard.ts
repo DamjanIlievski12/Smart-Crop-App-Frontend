@@ -22,10 +22,8 @@ export interface UseDashboardReturn {
   recentFields: Field[];
   stats: DashboardStats;
   weather: DashboardWeatherSummary;
-  recentReports: ReportRow[];
   isLoadingFields: boolean;
   isLoadingWeather: boolean;
-  isLoadingReports: boolean;
   errorFields: string | null;
   errorWeather: string | null;
   refresh: () => void;

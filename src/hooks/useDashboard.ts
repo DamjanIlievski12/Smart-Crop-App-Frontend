@@ -5,15 +5,12 @@ import type {
   UseDashboardReturn,
 } from "../api/types/dashboard";
 import type { Field } from "../api/types/field";
-import type { ReportRow } from "../api/types/report";
 import { apiGetFields } from "../api/fieldsApi";
 import { dtoToField } from "../components/dashboard/utils/dashboardHelpers";
 import { apiGetWeatherByField } from "../api/weatherApi";
-import { apiGetReports } from "../api/reportApi";
 
 export default function useDashboard(): UseDashboardReturn {
   const [fields, setFields] = useState<Field[]>([]);
-  const [recentReports, setRecentReports] = useState<ReportRow[]>([]);
   const [weather, setWeather] = useState<DashboardWeatherSummary>({
     temperature: null,
     humidity: null,
@@ -25,7 +22,6 @@ export default function useDashboard(): UseDashboardReturn {
 
   const [isLoadingFields, setIsLoadingFields] = useState(true);
   const [isLoadingWeather, setIsLoadingWeather] = useState(false);
-  const [isLoadingReports, setIsLoadingReports] = useState(true);
   const [errorFields, setErrorFields] = useState<string | null>(null);
   const [errorWeather, setErrorWeather] = useState<string | null>(null);
 
@@ -75,28 +71,13 @@ export default function useDashboard(): UseDashboardReturn {
     }
   }, []);
 
-  const fetchReports = useCallback(async () => {
-    setIsLoadingReports(true);
-
-    try {
-      const rows = await apiGetReports();
-      setRecentReports(rows.slice(0, 5));
-    } catch {
-      // Non-critical - silently fail
-    } finally {
-      setIsLoadingReports(false);
-    }
-  }, []);
-
   const refresh = useCallback(() => {
     void fetchFields().then((f) => fetchWeather(f));
-    void fetchReports();
-  }, [fetchFields, fetchWeather, fetchReports]);
+  }, [fetchFields, fetchWeather]);
 
   useEffect(() => {
     void fetchFields().then((f) => fetchWeather(f));
-    void fetchReports();
-  }, [fetchFields, fetchWeather, fetchReports]);
+  }, [fetchFields, fetchWeather]);
 
   // Computed stats
   const totalAreaHa = fields.reduce((sum, f) => {
@@ -125,10 +106,8 @@ export default function useDashboard(): UseDashboardReturn {
     recentFields,
     stats,
     weather,
-    recentReports,
     isLoadingFields,
     isLoadingWeather,
-    isLoadingReports,
     errorFields,
     errorWeather,
     refresh,

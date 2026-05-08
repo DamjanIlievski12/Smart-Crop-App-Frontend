@@ -9,7 +9,6 @@ import DashboardStatsBar from "../components/dashboard/DashboardStatsBar";
 import WeatherSummaryCards from "../components/dashboard/WeatherSummaryCards";
 import QuickActionsCard from "../components/dashboard/QuickActionsCard";
 import ActiveFieldsSection from "../components/dashboard/ActiveFieldsSection";
-import RecentReportsCard from "../components/dashboard/RecentReportsCard";
 
 export default function DashboardPage(): React.ReactElement {
   const {
@@ -17,10 +16,8 @@ export default function DashboardPage(): React.ReactElement {
     recentFields,
     stats,
     weather,
-    recentReports,
     isLoadingFields,
     isLoadingWeather,
-    isLoadingReports,
     errorFields,
     refresh,
   } = useDashboard();
@@ -110,12 +107,6 @@ export default function DashboardPage(): React.ReactElement {
                     isLoading={isLoadingFields}
                   />
                 </div>
-
-                {/* Recent reports: 1/3 */}
-                <RecentReportsCard
-                  reports={recentReports}
-                  isLoading={isLoadingReports}
-                />
               </div>
             )}
           </>
