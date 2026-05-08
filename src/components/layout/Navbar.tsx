@@ -25,7 +25,7 @@ export default function Navbar(): React.ReactElement {
         <nav className="hidden md:flex items-center gap-3">
           {user ? (
             <>
-              <Link to="/fields">
+              <Link to="/dashboard">
                 <Button variant="ghost">Dashboard</Button>
               </Link>
               <Button variant="primary" onClick={handleLogout}>
