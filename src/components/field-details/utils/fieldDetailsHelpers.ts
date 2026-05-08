@@ -49,3 +49,22 @@ export function dtoToEditForm(dto: FieldDTO): EditFieldForm {
     notes: dto.notes ?? "",
   };
 }
+
+export function shortDay(dateStr: string): string {
+  try {
+    return new Date(dateStr).toLocaleDateString("en-US", { weekday: "short" });
+  } catch {
+    return dateStr;
+  }
+}
+
+export function shortDate(dateStr: string): string {
+  try {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+}
