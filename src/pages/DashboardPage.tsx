@@ -9,6 +9,7 @@ import DashboardStatsBar from "../components/dashboard/DashboardStatsBar";
 import WeatherSummaryCards from "../components/dashboard/WeatherSummaryCards";
 import QuickActionsCard from "../components/dashboard/QuickActionsCard";
 import ActiveFieldsSection from "../components/dashboard/ActiveFieldsSection";
+import FieldsOverviewMap from "../components/map/FieldsOverviewMap";
 
 export default function DashboardPage(): React.ReactElement {
   const {
@@ -27,7 +28,7 @@ export default function DashboardPage(): React.ReactElement {
 
   return (
     <AppLayout>
-      <div className="space-y-6 max-w-7xl">
+      <div className="space-y-6 mx-auto w-full">
         {/* Welcome */}
         <div className="flex items-start justify-between">
           <DashboardWelcome />
@@ -71,9 +72,6 @@ export default function DashboardPage(): React.ReactElement {
             {/* Alert banner */}
             {hasFields && <DashboardAlertBanner stats={stats} />}
 
-            {/* Stats bar */}
-            {hasFields && <DashboardStatsBar stats={stats} isLoading={false} />}
-
             {/* Weather cards */}
             <WeatherSummaryCards
               weather={weather}
@@ -82,9 +80,10 @@ export default function DashboardPage(): React.ReactElement {
 
             {/* Main grid: quick actions */}
             {hasFields && (
-              <div className="grid lg:grid-cols-3 gap-6">
-                {/* Quick actions */}
-                <QuickActionsCard />
+              <div className="flex justify-end">
+                <div className="w-full lg:w-64">
+                  <QuickActionsCard />
+                </div>
               </div>
             )}
 
@@ -97,18 +96,19 @@ export default function DashboardPage(): React.ReactElement {
               </div>
             )}
 
-            {/* Bottom grid: active fields + recent reports */}
+            {/* Stats bar */}
+            {hasFields && <DashboardStatsBar stats={stats} isLoading={false} />}
+
+            {/* Active fields row */}
             {hasFields && (
-              <div className="grid lg:grid-cols-3 gap-6">
-                {/* Active fields: 2/3 */}
-                <div className="lg:col-span-2">
-                  <ActiveFieldsSection
-                    fields={recentFields}
-                    isLoading={isLoadingFields}
-                  />
-                </div>
-              </div>
+              <ActiveFieldsSection
+                fields={recentFields}
+                isLoading={isLoadingFields}
+              />
             )}
+
+            {/* Map row */}
+            {hasFields && <FieldsOverviewMap fields={fields} />}
           </>
         )}
       </div>

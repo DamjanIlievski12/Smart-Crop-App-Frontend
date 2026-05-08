@@ -47,6 +47,7 @@ export default function QuickActionsCard(): React.ReactElement {
             }`}
           >
             <Icon size={16} strokeWidth={2} />
+            <span>{label}</span>
           </Link>
         ))}
       </div>
