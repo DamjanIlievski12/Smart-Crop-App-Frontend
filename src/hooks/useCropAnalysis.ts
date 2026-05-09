@@ -6,11 +6,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Recommendation, RecommendationType } from "../api/types/analysis";
-import type { FieldDTO, RiskLevel } from "../api/types/field";
+import type { FieldDTO } from "../api/types/field";
 import { useEffect, useEffectEvent, useState } from "react";
 import { apiGetFields } from "../api/fieldsApi";
 import { apiAnalyzeCrop } from "../api/cropAnalysisApi";
 import { useLocation } from "react-router-dom";
+import type { RiskLevel } from "../api/types/field";
 import { useAnalysisResults } from "../context/analysis/analysisResultsContexts";
 
 /* ── Helpers ──────────────────────────────────────────── */
@@ -138,6 +139,14 @@ export const recIconMap: Record<
   },
 };
 
+export const defaultRecConfig = {
+  Icon: TrendingUp,
+  highBg: "bg-orange-50",
+  highColor: "text-orange-500",
+  defaultBg: "bg-gray-50",
+  defaultColor: "text-gray-500",
+};
+
 export interface UseCropAnalysisReturn {
   fields: FieldDTO[];
   selectedFieldId: number | null;
@@ -239,13 +248,15 @@ export function useCropAnalysis(): UseCropAnalysisReturn {
               ? "Medium"
               : "Low";
 
-        setAnalysis({
+        const analysisResult = {
           healthScore,
           healthLabel,
           conditions,
           diseaseRisks,
           recommendations,
-        });
+        };
+
+        setAnalysis(analysisResult);
 
         // Persist result to global context so other pages reflect the update
         saveResult({

@@ -8,6 +8,7 @@ import DiseaseRiskCard from "../components/crop-analysis/DiseaseRiskCard";
 import AIRecommendationsPanel from "../components/crop-analysis/AIRecommendationsPanel";
 import NoFieldsPrompt from "../components/shared/NoFieldsPrompt";
 import FieldSelectorPrompt from "../components/shared/FieldSelectorPrompt";
+import { useAnalysisResults } from "../context/analysis/analysisResultsContexts";
 
 export default function CropAnalysisPage(): React.ReactElement {
   const {
@@ -22,6 +23,11 @@ export default function CropAnalysisPage(): React.ReactElement {
     setSelectedFieldId,
     refresh,
   } = useCropAnalysis();
+
+  const { results: analysisResults } = useAnalysisResults();
+  const cachedResult = selectedFieldId
+    ? analysisResults[selectedFieldId]
+    : null;
 
   const header = (
     <div className="mb-6">
@@ -111,6 +117,7 @@ export default function CropAnalysisPage(): React.ReactElement {
             recommendations={analysis.recommendations}
             onRefresh={refresh}
             isRefreshing={isLoading}
+            lastUpdated={cachedResult?.lastAnalyzed ?? null}
           />
         </>
       )}
