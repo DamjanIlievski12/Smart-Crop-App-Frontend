@@ -8,9 +8,10 @@ import type { Field } from "../api/types/field";
 import { apiGetFields } from "../api/fieldsApi";
 import { dtoToField } from "../components/dashboard/utils/dashboardHelpers";
 import { apiGetWeatherByField } from "../api/weatherApi";
+import { useAnalysisResults } from "../context/analysis/analysisResultsContexts";
 
 export default function useDashboard(): UseDashboardReturn {
-  const [fields, setFields] = useState<Field[]>([]);
+  const [rawFields, setRawFields] = useState<Field[]>([]);
   const [weather, setWeather] = useState<DashboardWeatherSummary>({
     temperature: null,
     humidity: null,
@@ -25,6 +26,8 @@ export default function useDashboard(): UseDashboardReturn {
   const [errorFields, setErrorFields] = useState<string | null>(null);
   const [errorWeather, setErrorWeather] = useState<string | null>(null);
 
+  const { results: analysisResults } = useAnalysisResults();
+
   const fetchFields = useCallback(async () => {
     setIsLoadingFields(true);
     setErrorFields(null);
@@ -32,7 +35,7 @@ export default function useDashboard(): UseDashboardReturn {
     try {
       const res = await apiGetFields();
       const mapped = (res.fields ?? []).map(dtoToField);
-      setFields(mapped);
+      setRawFields(mapped);
       return mapped;
     } catch (err) {
       setErrorFields(
@@ -80,6 +83,21 @@ export default function useDashboard(): UseDashboardReturn {
   }, [fetchFields, fetchWeather]);
 
   // Computed stats
+  const fields: Field[] = rawFields.map((f) => {
+    const cached = analysisResults[f.id];
+    if (!cached) return f;
+    return {
+      ...f,
+      health: cached.healthScore,
+      risk: cached.riskLevel,
+      lastAnalysis: new Date(cached.lastAnalyzed).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+    };
+  });
+
   const totalAreaHa = fields.reduce((sum, f) => {
     const unit = f._raw.unit ?? "hectares";
     return sum + (unit === "acres" ? f.size * 0.404686 : f.size);

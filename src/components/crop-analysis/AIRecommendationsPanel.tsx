@@ -1,37 +1,64 @@
 import type React from "react";
 import type { Recommendation } from "../../api/types/analysis";
-import { Sparkles } from "lucide-react";
-import { recIconMap } from "../../hooks/useCropAnalysis";
+import { Clock, Loader2, Sparkles } from "lucide-react";
+import { defaultRecConfig, recIconMap } from "../../hooks/useCropAnalysis";
 
 interface Props {
   recommendations: Recommendation[];
   onRefresh: () => void;
+  isRefreshing?: boolean;
+  lastUpdated?: string | null;
 }
 
 export default function AIRecommendationsPanel({
   recommendations,
   onRefresh,
+  isRefreshing,
+  lastUpdated,
 }: Props): React.ReactElement {
+  const formattedDate = lastUpdated
+    ? new Date(lastUpdated).toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : null;
+
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-5">
       <div className="flex items-center justify-between mb-5">
-        <h2 className="flex items-center gap-2 text-base font-semibold text-gray-900">
-          <Sparkles size={18} className="text-[#2e5d40]" />
-          AI-Generated Recommendations
-        </h2>
+        <div>
+          <h2 className="flex items-center gap-2 text-base font-semibold text-gray-900">
+            <Sparkles size={18} className="text-[#2e5d40]" />
+            AI-Generated Recommendations
+          </h2>
+          {formattedDate && (
+            <p className="flex items-center gap-1 text-xs text-gray-400 mt-0.5 ml-6">
+              <Clock size={11} />
+              Last updated: {formattedDate}
+            </p>
+          )}
+        </div>
         <button
           className="flex items-center gap-2 bg-[#2e5d40] hover:bg-[#245033] text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors active:scale-[0.98]"
           onClick={onRefresh}
+          disabled={isRefreshing}
         >
-          <Sparkles size={14} />
-          Genearte New Analysis
+          {isRefreshing ? (
+            <Loader2 size={14} className="animate-spin" />
+          ) : (
+            <Sparkles size={14} />
+          )}
+          {isRefreshing ? "Generating…" : "Generate New Analysis"}
         </button>
       </div>
 
       <div className="flex flex-col gap-3">
         {recommendations.map((rec, idx) => {
           const isHigh = rec.priority === "High";
-          const config = recIconMap[rec.type];
+          const config = recIconMap[rec.type] ?? defaultRecConfig;
           const bg = isHigh ? config.highBg : config.defaultBg;
           const color = isHigh ? config.highColor : config.defaultColor;
           const { Icon } = config;

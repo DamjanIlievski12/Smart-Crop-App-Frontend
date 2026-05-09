@@ -1,5 +1,5 @@
-import type React from 'react';
-import { NavLink } from 'react-router-dom';
+import type React from "react";
+import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   MapPin,
@@ -8,29 +8,31 @@ import {
   Sprout,
   Cloud,
   FileText,
-  Settings,
-  User,
-} from 'lucide-react';
-import type { NavItem } from '../../api/types/ui';
-import { useAuth } from '../../context/auth/authContext';
+} from "lucide-react";
+import type { NavItem } from "../../api/types/ui";
+import { useAuth } from "../../context/auth/authContext";
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard',     icon: LayoutDashboard, to: '/dashboard' },
-  { label: 'Fields',        icon: MapPin,           to: '/fields' },
-  { label: 'Crop Analysis', icon: Activity,         to: '/crop-analysis' },
-  { label: 'Disease Risk',  icon: TriangleAlert,    to: '/disease-risk' },
-  { label: 'Fertilizer',    icon: Sprout,           to: '/fertilizer' },
-  { label: 'Weather',       icon: Cloud,            to: '/weather' },
-  { label: 'Reports',       icon: FileText,         to: '/reports' },
-  { label: 'Settings',      icon: Settings,         to: '/settings' },
+  { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
+  { label: "Fields", icon: MapPin, to: "/fields" },
+  { label: "Crop Analysis", icon: Activity, to: "/crop-analysis" },
+  { label: "Disease Risk", icon: TriangleAlert, to: "/disease-risk" },
+  { label: "Fertilizer", icon: Sprout, to: "/fertilizer" },
+  { label: "Weather", icon: Cloud, to: "/weather" },
+  { label: "Reports", icon: FileText, to: "/reports" },
 ];
 
 export default function Sidebar(): React.ReactElement {
   const { user } = useAuth();
 
   const initials = user?.fullName
-    ? user.fullName.split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase()
-    : '?';
+    ? user.fullName
+        .split(" ")
+        .map((n) => n[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()
+    : "?";
 
   return (
     <aside className="w-[230px] h-screen bg-[#2e5d40] flex flex-col flex-shrink-0 sticky top-0">
@@ -52,7 +54,9 @@ export default function Sidebar(): React.ReactElement {
           </svg>
         </div>
         <div className="flex flex-col leading-tight">
-          <span className="text-white font-bold text-sm tracking-tight">Smart Crop</span>
+          <span className="text-white font-bold text-sm tracking-tight">
+            Smart Crop
+          </span>
           <span className="text-white/60 text-xs">Advisor</span>
         </div>
       </div>
@@ -66,8 +70,8 @@ export default function Sidebar(): React.ReactElement {
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150 ${
                 isActive
-                  ? 'bg-white/15 text-white font-medium'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  ? "bg-white/15 text-white font-medium"
+                  : "text-white/70 hover:bg-white/10 hover:text-white"
               }`
             }
           >
@@ -84,10 +88,10 @@ export default function Sidebar(): React.ReactElement {
         </div>
         <div className="flex flex-col leading-tight min-w-0">
           <span className="text-white text-xs font-medium truncate">
-            {user?.fullName ?? '-'}
+            {user?.fullName ?? "-"}
           </span>
           <span className="text-white/50 text-xs truncate">
-            {user?.email ?? ''}
+            {user?.email ?? ""}
           </span>
         </div>
       </div>

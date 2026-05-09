@@ -7,6 +7,7 @@ import type {
 } from "../api/types/field";
 import type { StatCard } from "../api/types/ui";
 import { apiDeleteField, apiGetFields } from "../api/fieldsApi";
+import { useAnalysisResults } from "../context/analysis/analysisResultsContexts";
 
 export const ALL_CROPS = ["All Crops"];
 export const ALL_STATUSES = [
@@ -84,12 +85,14 @@ export interface UseFieldsReturn {
 }
 
 export function useFields(): UseFieldsReturn {
-  const [fields, setFields] = useState<Field[]>([]);
+  const [rawFields, setRawFields] = useState<Field[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [cropFilter, setCropFilter] = useState("All Crops");
   const [statusFilter, setStatusFilter] = useState("All Status");
+
+  const { results: analysisResults } = useAnalysisResults();
 
   const fetchFields = useCallback(async () => {
     setIsLoading(true);
@@ -97,7 +100,7 @@ export function useFields(): UseFieldsReturn {
 
     try {
       const response = await apiGetFields();
-      setFields((response.fields ?? []).map(dtoToField));
+      setRawFields((response.fields ?? []).map(dtoToField));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load fields.");
     } finally {
@@ -111,8 +114,24 @@ export function useFields(): UseFieldsReturn {
 
   const deleteField = useCallback(async (id: number) => {
     await apiDeleteField(id);
-    setFields((f) => f.filter((field) => field.id !== id));
+    setRawFields((f) => f.filter((field) => field.id !== id));
   }, []);
+
+  // Merge cached analysis results into field data
+  const fields: Field[] = rawFields.map((f) => {
+    const cached = analysisResults[f.id];
+    if (!cached) return f;
+    return {
+      ...f,
+      health: cached.healthScore,
+      risk: cached.riskLevel,
+      lastAnalysis: new Date(cached.lastAnalyzed).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+    };
+  });
 
   const availableCrops = [
     "All Crops",

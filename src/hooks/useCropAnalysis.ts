@@ -10,6 +10,9 @@ import type { FieldDTO } from "../api/types/field";
 import { useEffect, useEffectEvent, useState } from "react";
 import { apiGetFields } from "../api/fieldsApi";
 import { apiAnalyzeCrop } from "../api/cropAnalysisApi";
+import { useLocation } from "react-router-dom";
+import type { RiskLevel } from "../api/types/field";
+import { useAnalysisResults } from "../context/analysis/analysisResultsContexts";
 
 /* ── Helpers ──────────────────────────────────────────── */
 
@@ -136,6 +139,14 @@ export const recIconMap: Record<
   },
 };
 
+export const defaultRecConfig = {
+  Icon: TrendingUp,
+  highBg: "bg-orange-50",
+  highColor: "text-orange-500",
+  defaultBg: "bg-gray-50",
+  defaultColor: "text-gray-500",
+};
+
 export interface UseCropAnalysisReturn {
   fields: FieldDTO[];
   selectedFieldId: number | null;
@@ -143,30 +154,43 @@ export interface UseCropAnalysisReturn {
   analysis: AnalysisData | null;
   radicalData: Array<{ name: string; value: number; fill: string }>;
   isLoading: boolean;
+  isLoadingFields: boolean;
+  hasFields: boolean;
   error: string | null;
   setSelectedFieldId: (id: number) => void;
   refresh: () => void;
 }
 
 export function useCropAnalysis(): UseCropAnalysisReturn {
+  const location = useLocation();
+  const incomingFieldId =
+    (location.state as { fieldId?: number } | null)?.fieldId ?? null;
+
+  const { saveResult } = useAnalysisResults();
+
   const [fields, setFields] = useState<FieldDTO[]>([]);
-  const [selectedFieldId, setSelectedFieldId] = useState<number | null>(null);
+  const [selectedFieldId, setSelectedFieldId] = useState<number | null>(
+    incomingFieldId,
+  );
   const [refreshTick, setRefreshTick] = useState(0);
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(incomingFieldId !== null);
+  const [isLoadingFields, setIsLoadingFields] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load fields on mount
   useEffect(() => {
     async function loadFields() {
+      setIsLoadingFields(true);
       try {
         const res = await apiGetFields();
         const loaded = res.fields ?? [];
         setFields(loaded);
-        if (loaded[0]) setSelectedFieldId(loaded[0].id);
+        setIsLoading(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to lead fields.");
         setIsLoading(false);
+      } finally {
+        setIsLoadingFields(false);
       }
     }
     void loadFields();
@@ -213,12 +237,33 @@ export function useCropAnalysis(): UseCropAnalysisReturn {
 
         const recommendations: Recommendation[] = data.recommendations ?? [];
 
-        setAnalysis({
+        // Derive the overall risk from disease risks
+        const overallRiskPct = diseaseRisks.length
+          ? Math.max(...diseaseRisks.map((d) => d.pct))
+          : 0;
+        const overallRisk: RiskLevel =
+          overallRiskPct >= 60
+            ? "High"
+            : overallRiskPct >= 30
+              ? "Medium"
+              : "Low";
+
+        const analysisResult = {
           healthScore,
           healthLabel,
           conditions,
           diseaseRisks,
           recommendations,
+        };
+
+        setAnalysis(analysisResult);
+
+        // Persist result to global context so other pages reflect the update
+        saveResult({
+          fieldId: selectedFieldId!,
+          healthScore,
+          riskLevel: overallRisk,
+          lastAnalyzed: new Date().toISOString(),
         });
       } catch (err) {
         setError(
@@ -243,6 +288,8 @@ export function useCropAnalysis(): UseCropAnalysisReturn {
     analysis,
     radicalData,
     isLoading,
+    isLoadingFields,
+    hasFields: !isLoadingFields && fields.length > 0,
     error,
     setSelectedFieldId,
     refresh: () => setRefreshTick((t) => t + 1),

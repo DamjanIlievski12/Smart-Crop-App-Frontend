@@ -10,6 +10,7 @@ import {
   apiDownloadReportPdf,
   apiGenerateReportForExport,
 } from "../api/reportApi";
+import type { FieldDTO } from "../api/types/field";
 
 function triggerDownload(data: Blob, filename: string): void {
   const url = URL.createObjectURL(data);
@@ -38,47 +39,46 @@ export interface UseFertilizerReturn {
   yieldData: YieldDataPoint[];
   guidelines: ApplicationGuideline[];
   aiMetrics: AiMetric[];
-  fields: FertilizerField[];
+  fields: FieldDTO[];
   selectedFieldId: number | null;
   setSelectedFieldId: (id: number) => void;
-  isLoading: boolean;
+  isLoadingFields: boolean;
+  isLoadingData: boolean;
+  hasFields: boolean;
   isExporting: boolean;
   error: string | null;
   exportPdf: () => Promise<void>;
 }
 
 export function useFertilizer(): UseFertilizerReturn {
-  const [fields, setFields] = useState<FertilizerField[]>([]);
+  const [fields, setFields] = useState<FieldDTO[]>([]);
   const [selectedFieldId, setSelectedFieldId] = useState<number | null>(null);
   const [schedule, setSchedule] = useState<FertilizerScheduleItem[]>([]);
   const [yieldData, setYieldData] = useState<YieldDataPoint[]>([]);
   const [guidelines, setGuidelines] = useState<ApplicationGuideline[]>([]);
   const [aiMetrics, setAiMetrics] = useState<AiMetric[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingFields, setIsLoadingFields] = useState(true);
+  const [isLoadingData, setIsLoadingData] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadFields() {
+      setIsLoadingFields(true);
       try {
         const res = await apiGetFields();
-        const loaded = (res.fields ?? []).map((f) => ({
-          id: f.id,
-          name: f.name,
-          crop: f.crop,
-        }));
-        setFields(loaded);
-        if (loaded[0]) setSelectedFieldId(loaded[0].id);
+        setFields(res.fields ?? []);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load fields.");
-        setIsLoading(false);
+      } finally {
+        setIsLoadingFields(false);
       }
     }
     void loadFields();
   }, []);
 
   const fetchRecommendation = useCallback(async (fieldId: number) => {
-    setIsLoading(true);
+    setIsLoadingData(true);
     setError(null);
     try {
       const data = await apiGetFertilizrRecommendation(fieldId);
@@ -93,7 +93,7 @@ export function useFertilizer(): UseFertilizerReturn {
           : "Failed to load fertilizer recommendation.",
       );
     } finally {
-      setIsLoading(false);
+      setIsLoadingData(false);
     }
   }, []);
 
@@ -130,7 +130,9 @@ export function useFertilizer(): UseFertilizerReturn {
     fields,
     selectedFieldId,
     setSelectedFieldId,
-    isLoading,
+    isLoadingFields,
+    isLoadingData,
+    hasFields: !isLoadingFields && fields.length > 0,
     isExporting,
     error,
     exportPdf,

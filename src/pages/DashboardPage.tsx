@@ -7,7 +7,6 @@ import NoFieldsPrompt from "../components/dashboard/NoFieldsPrompt";
 import DashboardAlertBanner from "../components/dashboard/DashboardAlertBanner";
 import DashboardStatsBar from "../components/dashboard/DashboardStatsBar";
 import WeatherSummaryCards from "../components/dashboard/WeatherSummaryCards";
-import QuickActionsCard from "../components/dashboard/QuickActionsCard";
 import ActiveFieldsSection from "../components/dashboard/ActiveFieldsSection";
 import FieldsOverviewMap from "../components/map/FieldsOverviewMap";
 
@@ -77,24 +76,6 @@ export default function DashboardPage(): React.ReactElement {
               weather={weather}
               isLoading={isLoadingWeather}
             />
-
-            {/* Main grid: quick actions */}
-            {hasFields && (
-              <div className="flex justify-end">
-                <div className="w-full lg:w-64">
-                  <QuickActionsCard />
-                </div>
-              </div>
-            )}
-
-            {/* If no fields, still show quick actions */}
-            {!hasFields && (
-              <div className="flex justify-end">
-                <div className="w-full lg:w-64">
-                  <QuickActionsCard />
-                </div>
-              </div>
-            )}
 
             {/* Stats bar */}
             {hasFields && <DashboardStatsBar stats={stats} isLoading={false} />}

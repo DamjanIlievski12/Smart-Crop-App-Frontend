@@ -54,6 +54,7 @@ export default function LocationSection({
         {/* Coordinate input – synced with the map */}
         <FieldWrapper
           label="Coordinates"
+          required
           hint="Picked from map, or type: lat, lng (e.g. 41.99, 21.43)"
         >
           <Input
@@ -64,7 +65,7 @@ export default function LocationSection({
         </FieldWrapper>
 
         {/* Free-text address – still available for manual entry */}
-        <FieldWrapper label="Address / Location (optional)">
+        <FieldWrapper label="Address / Location" required>
           <Input
             placeholder="e.g., Kumanovo, North Macedonia"
             value={form.location}

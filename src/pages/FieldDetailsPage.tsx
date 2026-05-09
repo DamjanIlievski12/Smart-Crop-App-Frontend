@@ -105,7 +105,8 @@ export default function FieldDetailsPage(): React.ReactElement {
         {/* Quick-action cards */}
         <div className="grid sm:grid-cols-3 gap-4">
           <Link
-            to={`/crop-analysis?fieldId=${field.id}`}
+            to="/crop-analysis"
+            state={{ fieldId: field.id }}
             className="flex items-center gap-3 px-5 py-4 rounded-xl text-sm font-semibold text-white transition-colors"
             style={{ background: "var(--color-primary)" }}
             onMouseOver={(e) => {
