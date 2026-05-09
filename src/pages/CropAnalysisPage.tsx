@@ -110,6 +110,7 @@ export default function CropAnalysisPage(): React.ReactElement {
           <AIRecommendationsPanel
             recommendations={analysis.recommendations}
             onRefresh={refresh}
+            isRefreshing={isLoading}
           />
         </>
       )}

@@ -1,16 +1,18 @@
 import type React from "react";
 import type { Recommendation } from "../../api/types/analysis";
-import { Sparkles } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { recIconMap } from "../../hooks/useCropAnalysis";
 
 interface Props {
   recommendations: Recommendation[];
   onRefresh: () => void;
+  isRefreshing?: boolean;
 }
 
 export default function AIRecommendationsPanel({
   recommendations,
   onRefresh,
+  isRefreshing,
 }: Props): React.ReactElement {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-5">
@@ -22,9 +24,14 @@ export default function AIRecommendationsPanel({
         <button
           className="flex items-center gap-2 bg-[#2e5d40] hover:bg-[#245033] text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors active:scale-[0.98]"
           onClick={onRefresh}
+          disabled={isRefreshing}
         >
-          <Sparkles size={14} />
-          Genearte New Analysis
+          {isRefreshing ? (
+            <Loader2 size={14} className="animate-spin" />
+          ) : (
+            <Sparkles size={14} />
+          )}
+          {isRefreshing ? "Generating…" : "Generate New Analysis"}
         </button>
       </div>
 
