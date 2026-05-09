@@ -157,10 +157,12 @@ export function useCropAnalysis(): UseCropAnalysisReturn {
     (location.state as { fieldId?: number } | null)?.fieldId ?? null;
 
   const [fields, setFields] = useState<FieldDTO[]>([]);
-  const [selectedFieldId, setSelectedFieldId] = useState<number | null>(null);
+  const [selectedFieldId, setSelectedFieldId] = useState<number | null>(
+    incomingFieldId,
+  );
   const [refreshTick, setRefreshTick] = useState(0);
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(incomingFieldId !== null);
   const [isLoadingFields, setIsLoadingFields] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

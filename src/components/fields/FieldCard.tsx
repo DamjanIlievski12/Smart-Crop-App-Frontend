@@ -32,9 +32,9 @@ export default function FieldCard({ field }: Props): React.ReactElement {
           />
         </div>
         <span
-          className={`text-xs px-2.5 py-1 rounded-full font-medium ${RISK_CLASSES[field.risk] ?? RISK_CLASSES['NotAssessed']}`}
+          className={`text-xs px-2.5 py-1 rounded-full font-medium ${RISK_CLASSES[field.risk] ?? RISK_CLASSES["NotAssessed"]}`}
         >
-          {field.risk === 'NotAssessed' ? 'Not Assessed' : `${field.risk} Risk`}
+          {field.risk === "NotAssessed" ? "Not Assessed" : `${field.risk} Risk`}
         </span>
       </div>
 
@@ -89,6 +89,7 @@ export default function FieldCard({ field }: Props): React.ReactElement {
       <div className="grid grid-cols-2 gap-2">
         <Link
           to="/crop-analysis"
+          state={{ fieldId: field.id }}
           className="py-2 text-center text-sm font-medium rounded-lg text-white transition-colors"
           style={{ background: "var(--color-primary)" }}
           onMouseOver={(e) =>
