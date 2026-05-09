@@ -6,11 +6,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Recommendation, RecommendationType } from "../api/types/analysis";
-import type { FieldDTO } from "../api/types/field";
+import type { FieldDTO, RiskLevel } from "../api/types/field";
 import { useEffect, useEffectEvent, useState } from "react";
 import { apiGetFields } from "../api/fieldsApi";
 import { apiAnalyzeCrop } from "../api/cropAnalysisApi";
 import { useLocation } from "react-router-dom";
+import { useAnalysisResults } from "../context/analysis/analysisResultsContexts";
 
 /* ── Helpers ──────────────────────────────────────────── */
 
@@ -156,6 +157,8 @@ export function useCropAnalysis(): UseCropAnalysisReturn {
   const incomingFieldId =
     (location.state as { fieldId?: number } | null)?.fieldId ?? null;
 
+  const { saveResult } = useAnalysisResults();
+
   const [fields, setFields] = useState<FieldDTO[]>([]);
   const [selectedFieldId, setSelectedFieldId] = useState<number | null>(
     incomingFieldId,
@@ -225,12 +228,31 @@ export function useCropAnalysis(): UseCropAnalysisReturn {
 
         const recommendations: Recommendation[] = data.recommendations ?? [];
 
+        // Derive the overall risk from disease risks
+        const overallRiskPct = diseaseRisks.length
+          ? Math.max(...diseaseRisks.map((d) => d.pct))
+          : 0;
+        const overallRisk: RiskLevel =
+          overallRiskPct >= 60
+            ? "High"
+            : overallRiskPct >= 30
+              ? "Medium"
+              : "Low";
+
         setAnalysis({
           healthScore,
           healthLabel,
           conditions,
           diseaseRisks,
           recommendations,
+        });
+
+        // Persist result to global context so other pages reflect the update
+        saveResult({
+          fieldId: selectedFieldId!,
+          healthScore,
+          riskLevel: overallRisk,
+          lastAnalyzed: new Date().toISOString(),
         });
       } catch (err) {
         setError(
