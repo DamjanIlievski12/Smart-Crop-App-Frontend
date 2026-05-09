@@ -10,6 +10,7 @@ import type { FieldDTO } from "../api/types/field";
 import { useEffect, useEffectEvent, useState } from "react";
 import { apiGetFields } from "../api/fieldsApi";
 import { apiAnalyzeCrop } from "../api/cropAnalysisApi";
+import { useLocation } from "react-router-dom";
 
 /* ── Helpers ──────────────────────────────────────────── */
 
@@ -143,30 +144,39 @@ export interface UseCropAnalysisReturn {
   analysis: AnalysisData | null;
   radicalData: Array<{ name: string; value: number; fill: string }>;
   isLoading: boolean;
+  isLoadingFields: boolean;
+  hasFields: boolean;
   error: string | null;
   setSelectedFieldId: (id: number) => void;
   refresh: () => void;
 }
 
 export function useCropAnalysis(): UseCropAnalysisReturn {
+  const location = useLocation();
+  const incomingFieldId =
+    (location.state as { fieldId?: number } | null)?.fieldId ?? null;
+
   const [fields, setFields] = useState<FieldDTO[]>([]);
   const [selectedFieldId, setSelectedFieldId] = useState<number | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
   const [analysis, setAnalysis] = useState<AnalysisData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingFields, setIsLoadingFields] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load fields on mount
   useEffect(() => {
     async function loadFields() {
+      setIsLoadingFields(true);
       try {
         const res = await apiGetFields();
         const loaded = res.fields ?? [];
         setFields(loaded);
-        if (loaded[0]) setSelectedFieldId(loaded[0].id);
+        setIsLoading(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to lead fields.");
         setIsLoading(false);
+      } finally {
+        setIsLoadingFields(false);
       }
     }
     void loadFields();
@@ -243,6 +253,8 @@ export function useCropAnalysis(): UseCropAnalysisReturn {
     analysis,
     radicalData,
     isLoading,
+    isLoadingFields,
+    hasFields: !isLoadingFields && fields.length > 0,
     error,
     setSelectedFieldId,
     refresh: () => setRefreshTick((t) => t + 1),

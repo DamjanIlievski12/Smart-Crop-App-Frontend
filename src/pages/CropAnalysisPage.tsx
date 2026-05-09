@@ -6,6 +6,8 @@ import HealthScoreCard from "../components/crop-analysis/HealthScoreCard";
 import CurrentConditionsCard from "../components/crop-analysis/CurrentConditionsCard";
 import DiseaseRiskCard from "../components/crop-analysis/DiseaseRiskCard";
 import AIRecommendationsPanel from "../components/crop-analysis/AIRecommendationsPanel";
+import NoFieldsPrompt from "../components/shared/NoFieldsPrompt";
+import FieldSelectorPrompt from "../components/shared/FieldSelectorPrompt";
 
 export default function CropAnalysisPage(): React.ReactElement {
   const {
@@ -14,22 +16,60 @@ export default function CropAnalysisPage(): React.ReactElement {
     selectedField,
     analysis,
     isLoading,
+    isLoadingFields,
+    hasFields,
     error,
     setSelectedFieldId,
     refresh,
   } = useCropAnalysis();
 
+  const header = (
+    <div className="mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+        Crop Analysis
+      </h1>
+      <p className="text-sm text-gray-500 mt-1">
+        Detailed analysis and AI-powered recommendations for your crops
+      </p>
+    </div>
+  );
+
+  if (isLoadingFields) {
+    return (
+      <AppLayout>
+        {header}
+        <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
+          Loading fields…
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (!hasFields) {
+    return (
+      <AppLayout>
+        {header}
+        <NoFieldsPrompt message="Add a field first to run AI-powered crop analysis and get personalized recommendations." />
+      </AppLayout>
+    );
+  }
+
+  if (selectedFieldId === null) {
+    return (
+      <AppLayout>
+        {header}
+        <FieldSelectorPrompt
+          fields={fields}
+          onSelect={setSelectedFieldId}
+          message="Select a field to run crop analysis and view AI-powered recommendations."
+        />
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-          Crop Analysis
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Detailed analysis and AI-powered recommendations for your crops
-        </p>
-      </div>
+      {header}
 
       {/* ── Field Selector ── */}
       <FieldSelectorBar
