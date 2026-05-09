@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type {
   BadgeType,
   DiseaseAlert,
@@ -10,6 +10,7 @@ import type {
 } from "../api/types/disease";
 import { apiGetFields } from "../api/fieldsApi";
 import { apiAssessDiseaseRisk } from "../api/diseaseApi";
+import type { FieldDTO } from "../api/types/field";
 
 const severityStyles: Record<SeverityLevel, string> = {
   Medium: "bg-orange-100 text-orange-600",
@@ -18,6 +19,9 @@ const severityStyles: Record<SeverityLevel, string> = {
 };
 
 export interface UseDiseaseRiskReturn {
+  fields: FieldDTO[];
+  selectedFieldId: number | null;
+  setSelectedFieldId: (id: number) => void;
   riskMetrics: RiskMetric[];
   overallRisk: number | null;
   trendData: TrendDataPoint[];
@@ -26,11 +30,15 @@ export interface UseDiseaseRiskReturn {
   recommendations: PreventionRecommendation[];
   severityStyles: Record<SeverityLevel, string>;
   getRecommendationBadgeStyle: (type: BadgeType) => string;
-  isLoading: boolean;
+  isLoadingFields: boolean;
+  isLoadingData: boolean;
+  hasFields: boolean;
   error: string | null;
 }
 
 export function useDiseaseRisk(): UseDiseaseRiskReturn {
+  const [fields, setFields] = useState<FieldDTO[]>([]);
+  const [selectedFieldId, setSelectedFieldId] = useState<number | null>(null);
   const [riskMetrics, setRiskMetrics] = useState<RiskMetric[]>([]);
   const [overallRisk, setOverallRisk] = useState<number | null>(null);
   const [trendData, setTrendData] = useState<TrendDataPoint[]>([]);
@@ -41,48 +49,60 @@ export function useDiseaseRisk(): UseDiseaseRiskReturn {
   const [recommendations, setRecommendations] = useState<
     PreventionRecommendation[]
   >([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingFields, setIsLoadingFields] = useState(true);
+  const [isLoadingData, setIsLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function load() {
-      setIsLoading(true);
-      setError(null);
+    async function loadFields() {
+      setIsLoadingFields(true);
       try {
-        const fieldsRes = await apiGetFields();
-        const fields = fieldsRes.fields ?? [];
-        const firstField = fields[0];
-        if (!firstField) {
-          setIsLoading(false);
-          return;
-        }
-        const data = await apiAssessDiseaseRisk(firstField.id);
-
-        const metrics: RiskMetric[] = data.riskMetrics ?? [];
-        setRiskMetrics(metrics);
-        if (metrics.length > 0) {
-          setOverallRisk(
-            Math.round(
-              metrics.reduce((sum, m) => sum + m.value, 0) / metrics.length,
-            ),
-          );
-        }
-        setTrendData(data.trendData ?? []);
-        setVulnerabilityData(data.vulnerabilityData ?? []);
-        setDiseaseAlerts(data.diseaseAlerts ?? []);
-        setRecommendations(data.recommendations ?? []);
+        const res = await apiGetFields();
+        setFields(res.fields ?? []);
       } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Failed to load disease risk data.",
-        );
+        setError(err instanceof Error ? err.message : "Failed to load fields.");
       } finally {
-        setIsLoading(false);
+        setIsLoadingFields(false);
       }
     }
-    void load();
+    void loadFields();
   }, []);
+
+  const fetchData = useCallback(async (fieldId: number) => {
+    setIsLoadingData(true);
+    setError(null);
+    try {
+      const data = await apiAssessDiseaseRisk(fieldId);
+
+      const metrics: RiskMetric[] = data.riskMetrics ?? [];
+      setRiskMetrics(metrics);
+      if (metrics.length > 0) {
+        setOverallRisk(
+          Math.round(
+            metrics.reduce((sum, m) => sum + m.value, 0) / metrics.length,
+          ),
+        );
+      }
+      setTrendData(data.trendData ?? []);
+      setVulnerabilityData(data.vulnerabilityData ?? []);
+      setDiseaseAlerts(data.diseaseAlerts ?? []);
+      setRecommendations(data.recommendations ?? []);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to load disease risk data.",
+      );
+    } finally {
+      setIsLoadingData(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedFieldId !== null) {
+      void fetchData(selectedFieldId);
+    }
+  }, [selectedFieldId, fetchData]);
 
   const getRecommendationBadgeStyle = (type: BadgeType): string =>
     type === "Active"
@@ -90,6 +110,9 @@ export function useDiseaseRisk(): UseDiseaseRiskReturn {
       : "bg-blue-100 text-blue-600";
 
   return {
+    fields,
+    selectedFieldId,
+    setSelectedFieldId,
     riskMetrics,
     overallRisk,
     trendData,
@@ -98,7 +121,9 @@ export function useDiseaseRisk(): UseDiseaseRiskReturn {
     recommendations,
     severityStyles,
     getRecommendationBadgeStyle,
-    isLoading,
+    isLoadingFields,
+    isLoadingData,
+    hasFields: !isLoadingFields && fields.length > 0,
     error,
   };
 }
