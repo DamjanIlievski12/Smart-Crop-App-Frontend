@@ -15,6 +15,7 @@ import {
   apiGenerateReport,
   apiGetReports,
 } from "../api/reportApi";
+import { useNavigate } from "react-router-dom";
 
 const typeBadgeStyles: Record<ReportType, string> = {
   "Crop Analysis": "bg-green-50 text-green-700",
@@ -90,6 +91,7 @@ export interface UseReportsReturn {
 }
 
 export function useReports(): UseReportsReturn {
+  const navigate = useNavigate();
   const [reports, setReports] = useState<ReportRow[]>([]);
   const [fields, setFields] = useState<FieldDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -200,16 +202,6 @@ export function useReports(): UseReportsReturn {
   const exportOptions: ExportOption[] = useMemo(
     () => [
       {
-        title: "Export as PDF",
-        description:
-          "Download a selected report in PDF format with charts and analysis",
-        buttonLabel: "Download PDF",
-        primary: true,
-        icon: FileText,
-        iconBg: "bg-red-50",
-        iconColor: "text-red-500",
-      },
-      {
         title: "Export as CSV",
         description: "Export all reports as CSV for further analysis",
         buttonLabel: "Download CSV",
@@ -228,9 +220,10 @@ export function useReports(): UseReportsReturn {
         icon: BarChart3,
         iconBg: "bg-blue-50",
         iconColor: "text-blue-600",
+        onAction: () => navigate("/dashboard"),
       },
     ],
-    [exportCsv],
+    [exportCsv, navigate],
   );
 
   const filteredReports = useMemo(
