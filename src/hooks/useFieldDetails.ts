@@ -11,13 +11,15 @@ import {
   dtoToField,
 } from "../components/field-details/utils/fieldDetailsHelpers";
 import { useNavigate } from "react-router-dom";
+import { useAnalysisResults } from "../context/analysis/analysisResultsContexts";
 
 const DELETE_COUNTDOWN = 10; // second before auto-delete
 
 export function useFieldDetails(fieldId: number): UseFieldDetailsReturn {
   const navigate = useNavigate();
+  const { results: analysisResults } = useAnalysisResults();
 
-  const [field, setField] = useState<Field | null>(null);
+  const [rawField, setRawField] = useState<Field | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +54,7 @@ export function useFieldDetails(fieldId: number): UseFieldDetailsReturn {
     try {
       const response = await apiGetField(fieldId);
       const mapped = dtoToField(response.field);
-      setField(mapped);
+      setRawField(mapped);
       setEditForm(dtoToEditForm(response.field));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load field.");
@@ -74,12 +76,12 @@ export function useFieldDetails(fieldId: number): UseFieldDetailsReturn {
 
   // Edit handlers
   const openEdit = useCallback(() => {
-    if (field) {
-      setEditForm(dtoToEditForm(field._raw));
+    if (rawField) {
+      setEditForm(dtoToEditForm(rawField._raw));
     }
     setUpdateError(null);
     setIsEditOpen(true);
-  }, [field]);
+  }, [rawField]);
 
   const closeEdit = useCallback(() => {
     setIsEditOpen(false);
@@ -133,7 +135,7 @@ export function useFieldDetails(fieldId: number): UseFieldDetailsReturn {
         }
 
         const response = await apiUpdateField(fieldId, payload);
-        setField(dtoToField(response.field));
+        setRawField(dtoToField(response.field));
         setEditForm(dtoToEditForm(response.field));
         setIsEditOpen(false);
       } catch (err) {
@@ -200,6 +202,23 @@ export function useFieldDetails(fieldId: number): UseFieldDetailsReturn {
     stopCountdown();
     setDeleteState({ phase: "idle" });
   }, [stopCountdown]);
+
+  // Merge cached analysis results into field data for real-time updates
+  const field: Field | null = rawField
+    ? (() => {
+        const cached = analysisResults[rawField.id];
+        if (!cached) return rawField;
+        return {
+          ...rawField,
+          health: cached.healthScore,
+          risk: cached.riskLevel,
+          lastAnalysis: new Date(cached.lastAnalyzed).toLocaleDateString(
+            "en-GB",
+            { day: "2-digit", month: "short", year: "numeric" },
+          ),
+        };
+      })()
+    : null;
 
   return {
     field,
