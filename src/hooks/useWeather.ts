@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use, useCallback } from "react";
 import {
   Sun,
   Cloud,
@@ -23,6 +23,7 @@ import type {
 import { apiGetFields } from "../api/fieldsApi";
 import { apiGetWeatherDashboard } from "../api/weatherApi";
 import toImpactLevel from "../components/weather/utils/weatherHelpers";
+import type { FieldDTO } from "../api/types/field";
 
 const descriptionIconMap: Record<string, LucideIcon> = {
   sunny: Sun,
@@ -54,6 +55,9 @@ const metricIconConfig: Record<string, LucideIcon> = {
 };
 
 export interface UseWeatherReturn {
+  fields: FieldDTO[];
+  selectedFieldId: number | null;
+  setSelectedFieldId: (id: number) => void;
   temp: number | null;
   condition: string | null;
   lastUpdated: string | null;
@@ -64,11 +68,15 @@ export interface UseWeatherReturn {
   humidityData: HumidityPoint[];
   rainfallData: RainfallPoint[];
   impacts: WeatherImpact[];
-  isLoading: boolean;
+  isLoadingFields: boolean;
+  isLoadingWeather: boolean;
+  hasFields: boolean;
   error: string | null;
 }
 
 export function useWeather(): UseWeatherReturn {
+  const [fields, setFields] = useState<FieldDTO[]>([]);
+  const [selectedFieldId, setSelectedFieldId] = useState<number | null>(null);
   const [temp, setTemp] = useState<number | null>(null);
   const [condition, setCondition] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
@@ -83,23 +91,35 @@ export function useWeather(): UseWeatherReturn {
   const [humidityData, setHumidityData] = useState<HumidityPoint[]>([]);
   const [rainfallData, setRainfallData] = useState<RainfallPoint[]>([]);
   const [impacts, setImpacts] = useState<WeatherImpact[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingFields, setIsLoadingFields] = useState(true);
+  const [isLoadingWeather, setIsLoadingWeather] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function load() {
-      setIsLoading(true);
+    async function loadFields() {
+      setIsLoadingFields(true);
+      try {
+        const res = await apiGetFields();
+        setFields(res.fields ?? []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load fields.");
+      } finally {
+        setIsLoadingFields(false);
+      }
+    }
+    void loadFields();
+  }, []);
+
+  const fetchWeather = useCallback(
+    async (fieldId: number) => {
+      const field = fields.find((f) => f.id === fieldId);
+      if (!field) return;
+
+      setIsLoadingWeather(true);
       setError(null);
       try {
-        const fieldsRes = await apiGetFields();
-        const fields = fieldsRes.fields ?? [];
-        const firstField = fields[0];
-        if (!firstField) {
-          setIsLoading(false);
-          return;
-        }
-        setFieldLocation(firstField.location);
-        const data = await apiGetWeatherDashboard(firstField.location);
+        setFieldLocation(field.location);
+        const data = await apiGetWeatherDashboard(field.location);
 
         setTemp(data.current?.temperature ?? null);
         setCondition(data.current?.description ?? null);
@@ -118,7 +138,7 @@ export function useWeather(): UseWeatherReturn {
         );
 
         setForecast(
-          (data.forecast ?? []).map((f) => ({
+          (data.forecast ?? []).slice(0, 5).map((f) => ({
             day: f.day,
             date: f.date,
             icon: descriptionToIcon(f.description ?? ""),
@@ -128,9 +148,9 @@ export function useWeather(): UseWeatherReturn {
           })),
         );
 
-        setTemperatureData(data.temperatureData ?? []);
-        setHumidityData(data.humidityData ?? []);
-        setRainfallData(data.rainfallData ?? []);
+        setTemperatureData((data.temperatureData ?? []).slice(0, 5));
+        setHumidityData((data.humidityData ?? []).slice(0, 5));
+        setRainfallData((data.rainfallData ?? []).slice(0, 5));
 
         setImpacts(
           (data.impacts ?? []).map((imp) => ({
@@ -153,13 +173,22 @@ export function useWeather(): UseWeatherReturn {
           err instanceof Error ? err.message : "Failed to load weather data.",
         );
       } finally {
-        setIsLoading(false);
+        setIsLoadingWeather(false);
       }
+    },
+    [fields],
+  );
+
+  useEffect(() => {
+    if (selectedFieldId !== null) {
+      void fetchWeather(selectedFieldId);
     }
-    void load();
-  }, []);
+  }, [selectedFieldId, fetchWeather]);
 
   return {
+    fields,
+    selectedFieldId,
+    setSelectedFieldId,
     temp,
     condition,
     lastUpdated,
@@ -170,7 +199,9 @@ export function useWeather(): UseWeatherReturn {
     humidityData,
     rainfallData,
     impacts,
-    isLoading,
+    isLoadingFields,
+    isLoadingWeather,
+    hasFields: !isLoadingFields && fields.length > 0,
     error,
   };
 }
